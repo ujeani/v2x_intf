@@ -8,6 +8,9 @@ obu_port = 1000 # TODO : MATCH IT!
 # Create a TCP socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+# Connect to the server (establishing the connection)
+client_socket.connect((obu_ip, obu_port))
+
 class RecognitionSubscriber(Node):
     def __init__(self):
         super().__init__('recognition_subscriber')
@@ -20,6 +23,9 @@ class RecognitionSubscriber(Node):
 
     def recognition_callback(self, msg):
         print("I heard:", msg)
+
+        client_socket.send() #* message.encode())
+
         # TODO : Send to OBU through TCP interface
 
 def main(args=None):
@@ -27,6 +33,7 @@ def main(args=None):
     recognition_subscriber = RecognitionSubscriber()
     rclpy.spin(recognition_subscriber)
 
+    client_socket.close()
     recognition_subscriber.destroy_node()
     rclpy.shutdown()
 
