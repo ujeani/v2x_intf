@@ -19,16 +19,8 @@ class RecognitionSubscriber(Node):
         self.subscription  # prevent unused variable warning
 
     def recognition_callback(self, msg):
-        # TODO : Open socket & send data to OBU
-        pass
-# #             int32 vehicle_id
-# # int32[] datetime
-# # float32[] vehicle_pose
-# # float32 vehicle_velocity
-# # case_msgs/Objects[] object_data
-
-#         print("I heard:", msg)
-#         # self.get_logger().info('I heard:
+        print("I heard:", msg)
+        # TODO : Send to OBU through TCP interface
 
 def main(args=None):
     rclpy.init(args=args)
