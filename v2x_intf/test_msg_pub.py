@@ -1,14 +1,14 @@
 import rclpy as rp 
 from rclpy.node import Node
-from case_msgs.msg import Recognition, Objects
+from cogaug_msgs.msg import Recognition, Objects
 import datetime as d
 
-class CaseMsgsPub(Node):
+class CogAugMsgsPub(Node):
     def __init__(self):
-        super().__init__('case_msg_pub')
+        super().__init__('cogaug_msg_pub')
         self.timer_period = 1.0
         self.cnt_run = 1
-        self.pub_rec = self.create_publisher(Recognition, 'caselab/recognition', 10)
+        self.pub_rec = self.create_publisher(Recognition, 'cogaug/recognition', 10)
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
         # self.recog = Recognition()
 
@@ -43,10 +43,10 @@ class CaseMsgsPub(Node):
     
 def main(args=None):
     rp.init(args=args)
-    case_msgs_pub = CaseMsgsPub()
-    rp.spin(case_msgs_pub)
+    cogaug_msgs_pub = CogAugMsgsPub()
+    rp.spin(cogaug_msgs_pub)
 
-    case_msgs_pub.destroy_node()
+    cogaug_msgs_pub.destroy_node()
     rp.shutdown()
 
 

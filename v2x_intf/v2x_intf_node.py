@@ -1,7 +1,7 @@
 import rclpy as rclpy
 from rclpy.node import Node
 
-from case_msgs.msg import Recognition, Objects
+from cogaug_msgs.msg import Recognition, Objects
 import socket
 import threading
 import select
@@ -65,7 +65,7 @@ class RecognitionSubscriber(Node):
         super().__init__('recognition_subscriber')
         self.subscription = self.create_subscription(
             Recognition,
-            'caselab/recognition',
+            'cogaug/recognition',
             self.recognition_callback,
             10)
         self.subscription  # prevent unused variable warning
@@ -116,9 +116,6 @@ def main(args=None):
     
     except KeyboardInterrupt:
         pass
-
-
-
 
     # Close the connection when done
     connection_manager.close_connection()
