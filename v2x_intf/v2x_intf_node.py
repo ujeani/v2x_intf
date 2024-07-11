@@ -5,13 +5,20 @@ from v2x_msgs.msg import Recognition, Objects
 import socket
 import threading
 import select
-from struct import *
+import struct
+import datetime
+import math
 
+
+R = 6378137.0 # Radius of the Earth in meters
+equipmentType = 2 # unknown (0), rsu (1), obu (2)
 
 class TcpConnectionManager:
     def __init__(self):
+
         self.obu_ip = '192.168.2.100' # TODO : MATCH IT!
         self.obu_port = 9201
+
         self.obu_connected = False
         self.receive_buffer = b''
         self.lock = threading.Lock()
@@ -69,30 +76,130 @@ class RecognitionSubscriber(Node):
         self.subscription  # prevent unused variable warning
         self.connection_manager = connection_manager
 
-    def convertToV2XMsg(self, msg):
-        # Consider to use https://docs.python.org/3/library/struct.html
-        # TODO : convert to V2X msg
-        # 'i' int32 vehicle_id
-        # 'iiiiiii' int32[] datetime
-        # 'ff' float32[] vehicle_pose
-        # 'f' float32 vehicle_velocity
-        #  cogaug_msgs/Objects[] object_data
-        #  'ff'     float32[] object_position
-        #  'f'     float32 object_velocity
-        #  'i'     int32 object_class
-        #  'f'     float32 recognition_accuracy
 
-        # "<iiiiiiiiffffffif" 
+    def _calculate_offsets(lat1, lon1, lat2, lon2):
+      # Convert degrees to radians
+      lat1_rad = math.radians(lat1)
+      lon1_rad = math.radians(lon1)
+      lat2_rad = math.radians(lat2)
+      lon2_rad = math.radians(lon2)
+        
+      # Differences in coordinates
+      dlat = lat2_rad - lat1_rad
+      dlon = lon2_rad - lon1_rad
+        
+      # Mean latitude
+      mean_lat = (lat1_rad + lat2_rad) / 2
+        
+      # Calculate offsets
+      x_offset = R * dlon * math.cos(mean_lat)
+      y_offset = R * dlat
+        
+      return int(x_offset*10.0), int(y_offset*10.0) # convert to 0.1 meter unit
 
-        pass
+    def Recognition2V2XMsg(self, msg):
+        sDSMTimeStamp = (
+            msg.vehicle_time[0],  # year
+            msg.vehicle_time[1],  # month
+            msg.vehicle_time[2],  # day
+            msg.vehicle_time[3],  # hour
+            msg.vehicle_time[4],  # minute
+            msg.vehicle_time[5]*1000+msg.vehicle_time[6], # milliseconds
+            9*60 # Timezone in minutes
+        )
+        dt1 = datetime(
+            msg.datetime[0],  # year
+            msg.datetime[1],  # month
+            msg.datetime[2],  # day
+            msg.datetime[3],  # hour
+            msg.datetime[4],  # minute
+            msg.datetime[5],  # second
+            msg.datetime[6]*1000   # milliseconds
+        )
 
-    def convertFromV2XMsg(self, msg):
-        # TODO : convert from V2X msg
-        pass
+        position3D = (
+            msg.vehicle_pos[0]*1000*1000*10, # Latitude in 1/10th microdegree
+            msg.vehicle_pos[1]*1000*1000*10  # Longitude in 1/10th microdegree
+        )
+
+        positionAccuracy = (
+            255,  # semiMajor
+            255,  # semiMinor
+            65535 # orientation
+        )
+
+        # Convert msg to C struct data type
+        fDDateTimeType = 'HBBBBHh' # (year, month, day, hour, minute, second, offset)
+        fPosition3D = 'll' # (latitude, longitude)
+        fPositionalAccuracy = 'BBH'
+        fDetectedObjectCommonData = '<BBHhBhhBHBHB'
+        fFirstPart = f'<B {fDDateTimeType} {fPosition3D} {fPositionalAccuracy} B' # equipmentType, sDSMTimeStamp, refPos, refPosXYConf, numDetectedObjects
+
+        packed_objects = b''
+        num_object = 0
+        for idx, obj in enumerate(msg.object_data) :
+            # Create datetime objects, including milliseconds
+            dt2 = (
+              obj.datetime[0],  # year
+              obj.datetime[1],  # month
+              obj.datetime[2],  # day
+              obj.datetime[3],  # hour
+              obj.datetime[4],  # minute
+              obj.datetime[5],  # second
+              obj.datetime[6]*1000  # millisecond to microsecond
+            )
+            measurementTime = (dt2-dt1).total_seconds()*1000
+            if measurementTime > 1500 or measurementTime < -1500 : # sDSMTimeStamp보다 1.5초 빨리 디텍트한 객체
+              continue
+            
+            object_id = msg.vehicle_id << 16 + idx
+
+            offsetX, offsetY = self._calculate_offsets( msg.vehicle_pos[0],  msg.vehicle_pos[1], obj.object_position[0], obj.object_position[1])
+            if offsetX > 32767 or offsetX < -32767 or offsetY > 32767 or offsetY < -32767 :
+                continue
+            
+            speed = int(obj.object_velocity / 0.02)
+            if speed > 8191 :
+                continue
+            
+            if obj.object_heading < 0.0 :
+                obj.object_heading += 360.0
+            heading = int(((obj.object_heading)%360.0)/0.0125)  # in 0.0125 degree unit
+            if heading > 28800 :
+                continue
+            
+            packed_object = struct.pack(
+              fDetectedObjectCommonData,
+              obj.object_class,
+              int(obj.object_accuracy*100),
+              object_id,
+              measurementTime,
+              0, # timeConfidence
+              offsetX, offsetY,
+              0, # posConfidence
+              speed,
+              0, # speedConfidence
+              heading,
+              0 # headingConfidence
+            )
+            packed_objects += packed_object
+            num_object += 1
+
+        packed_data = struct.pack(
+          fFirstPart,
+          equipmentType,
+          *sDSMTimeStamp,
+          *position3D,
+          *positionAccuracy,
+          num_object
+        )
+        packed_data += packed_objects
+
+        return packed_data
 
     def recognition_callback(self, msg):
         print('Received recognition message:', msg)
-        data = self.convertToV2XMsg(msg)
+        data = self.Recognition2V2XMsg(msg)
         # Send the received message data to the server over the shared TCP connection
         response = self.connection_manager.send_data(data)
         if response:

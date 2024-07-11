@@ -24,7 +24,7 @@ class V2XMsgsPub(Node):
         re = Recognition(
             vehicle_id = 1,
             datetime = self.date_time(),
-            vehicle_pose = [0.321+float(self.cnt_run), 0.33232+float(self.cnt_run)],
+            vehicle_position = [0.321+float(self.cnt_run), 0.33232+float(self.cnt_run)],
             # vehicle_velocity = float(self.cnt_run+0.412),
             object_data = [od]
         )
