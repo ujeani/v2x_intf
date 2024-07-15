@@ -19,7 +19,7 @@ class RecognitionSubscriber(Node):
         self.subscription  # prevent unused variable warning
         self.connection_manager = connection_manager
 
-    def _calculate_offsets(lat1, lon1, lat2, lon2):
+    def _calculate_offsets(self, lat1, lon1, lat2, lon2):
         # Convert degrees to radians
         lat1_rad = math.radians(lat1)
         lon1_rad = math.radians(lon1)
