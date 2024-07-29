@@ -1,7 +1,7 @@
 import socket
 import threading
 import select
-from v2x_const import V2XConst as v2xconst
+from v2x_intf.pkg.v2x_const import V2XConst as v2xconst
 
 class TcpConnectionManager:
     def __init__(self):
