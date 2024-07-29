@@ -96,7 +96,7 @@ class RecognitionSubscriber(Node):
             
             object_id = msg.vehicle_id << 16 + idx  # vehicle_id는 제어부에서 임의로 설정되는데 현재 3대의 자율차에 1,2,3으로 할당.
 
-            offsetX, offsetY = self._calculate_offsets( msg.vehicle_pos[0],  msg.vehicle_pos[1], obj.object_position[0], obj.object_position[1])
+            offsetX, offsetY = self._calculate_offsets( msg.vehicle_position[0],  msg.vehicle_position[1], obj.object_position[0], obj.object_position[1])
             if offsetX > 32767 or offsetX < -32767 or offsetY > 32767 or offsetY < -32767 :
                 continue
             
