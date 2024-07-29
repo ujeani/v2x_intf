@@ -5,7 +5,7 @@ import datetime as d
 
 class V2XMsgsPub(Node):
     def __init__(self):
-        super().__init__('v2x_msg_pub')
+        super().__init__('v2x_msg_test')
         self.timer_period = 1.0
         self.cnt_run = 1
         self.pub_rec = self.create_publisher(Recognition, 'v2x_msgs/recognition', 10)
