@@ -4,7 +4,7 @@ from v2x_msgs.msg import Recognition
 import struct
 import datetime
 import math
-from v2x_const import V2XConstants as v2xconst
+from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
 
 class RecognitionSubscriber(Node):
     def __init__(self, connection_manager):
