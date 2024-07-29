@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'v2x_intf_node = v2x_intf_package.vx_intf:main',
+            'v2x_intf_node = v2x_intf_package.v2x_intf:main',
             # 'v2x_subscriber = v2x_intf.v2x_subscriber:main',
             'v2x_msg_test = v2x_intf_package.v2x_msg_pub:main',
         ],
