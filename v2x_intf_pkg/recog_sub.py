@@ -136,11 +136,6 @@ class RecognitionSubscriber(Node):
             )
             packed_objects += packed_object
             num_object += 1
-            self.get_logger().info(f'--> obj.object_class: {obj.object_class}')
-            self.get_logger().info(f'--> obj.recognition_accuracy: {int(obj.recognition_accuracy)}')
-
-
-
 
         packed_data = struct.pack(
           v2xconst.fFirstPart,
@@ -152,7 +147,7 @@ class RecognitionSubscriber(Node):
         )
         packed_data += packed_objects
 
-        self.get_logger().info(f'Packed data: {packed_data}')
+        self.get_logger().info(f'Packed data: {packed_data}, length : {len(packed_data)}')
 
         # Convert header to C struct data type
         # Ref : v2x_intf_hdr_type
@@ -162,6 +157,10 @@ class RecognitionSubscriber(Node):
             v2xconst.MSG_RECOGNITION,   # msgID for recognition
             len(packed_data)            # msgLen
         )
+
+        self.get_logger().info(f'Header data: {hdr_data}, length : {len(hdr_data)}')
+        self.get_logger().info(f'HDR_FLAG: {v2xconst.HDR_FLAG}')
+        self.get_logger().info(f'MSG_RECOGNITION: {v2xconst.MSG_RECOGNITION}')
 
         return hdr_data+packed_data
 
