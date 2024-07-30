@@ -149,6 +149,9 @@ class RecognitionSubscriber(Node):
 
         self.get_logger().info(f'Packed data: {packed_data}, length : {len(packed_data)}')
 
+        self.get_logger().info(f'HDR_FLAG: {v2xconst.HDR_FLAG}')
+        self.get_logger().info(f'MSG_RECOGNITION: {v2xconst.MSG_RECOGNITION}')
+
         # Convert header to C struct data type
         # Ref : v2x_intf_hdr_type
         hdr_data = struct.pack(
@@ -159,8 +162,6 @@ class RecognitionSubscriber(Node):
         )
 
         self.get_logger().info(f'Header data: {hdr_data}, length : {len(hdr_data)}')
-        self.get_logger().info(f'HDR_FLAG: {v2xconst.HDR_FLAG}')
-        self.get_logger().info(f'MSG_RECOGNITION: {v2xconst.MSG_RECOGNITION}')
 
         return hdr_data+packed_data
 
