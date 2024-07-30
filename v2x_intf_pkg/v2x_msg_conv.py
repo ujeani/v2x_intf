@@ -1,12 +1,14 @@
 from v2x_msgs.msg import Recognition
 import struct
 import datetime
+from rclpy.node import Node
+
 from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
 
 
 class Parser :
   def __init__(self):
-    pass
+    super().__init__('recognition_msg_node')
 
   def parse(self, pkd_data):
     # Unpack the header
