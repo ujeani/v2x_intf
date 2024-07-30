@@ -7,8 +7,8 @@ from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
 
 
 class Parser :
-  def __init__(self):
-    super().__init__('recognition_msg_node')
+  def __init__(self, logger):
+    self.logger = logger
 
   def parse(self, pkd_data):
     # Unpack the header
@@ -27,15 +27,15 @@ class Parser :
       return None
     else :
       if msg_type is v2xconst.MSG_RECOGNITION:
-        return RecognitionMsg().fromV2XMsg(pkd_data[header_size:])
+        return RecognitionMsg(self.logger).fromV2XMsg(pkd_data[header_size:])
       else :
         self.get_logger().info('Unknown message type: %d' % msg_type)
         return None
     
 
 class RecognitionMsg :
-  def __init__(self):
-    super().__init__('recognition_msg_node')
+  def __init__(self, logger):
+    self.logger = logger
 
   def fromV2XMsg(self, data): # Header를 제외한 데이터를 수신받아서 Recognition 메시지로 변환
     first_part_size = struct.calcsize(v2xconst.fFirstPart)

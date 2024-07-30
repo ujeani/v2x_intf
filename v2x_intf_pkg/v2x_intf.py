@@ -7,12 +7,12 @@ from v2x_intf_pkg.tcpconn_man import TcpConnectionManager
 from v2x_intf_pkg.recog_sub import RecognitionSubscriber
 
 def main(args=None):
-    parser = Parser()
     rclpy.init(args=args)
     connection_manager = TcpConnectionManager()
     recognition_subscriber = RecognitionSubscriber(connection_manager)
 
     main_node = rclpy.create_node('main_node')
+    parser = Parser(main_node.get_logger())
 
     try:
         # Main loop for your node

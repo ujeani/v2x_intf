@@ -25,7 +25,7 @@ class RecognitionSubscriber(Node):
 
     def recognition_callback(self, msg):
         self.get_logger().info('Received recognition message')
-        recogMsg = RecognitionMsg()
+        recogMsg = RecognitionMsg(self.get_logger())
         try:
             data = recogMsg.toV2XMsg(msg)
             # Send the received message data to the server over the shared TCP connection
