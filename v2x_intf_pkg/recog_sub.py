@@ -171,8 +171,9 @@ class RecognitionSubscriber(Node):
             data = self.Recognition2V2XMsg(msg)
             # Send the received message data to the server over the shared TCP connection
             if data :
-              response = self.connection_manager.send_data(data)
-              if response:
-                  self.get_logger().info(f'Received response from server: {response}')
+              self.connection_manager.send_data(data)
+              # if response:
+              #     self.get_logger().info(f'Received response from server: {response}')
+              #     pass
         except Exception as e:
             self.get_logger().error(f'Error processing recognition message: {e}')

@@ -19,7 +19,7 @@ def main(args=None):
             if connection_manager.obu_connected:
                 received_data = connection_manager.receive_data()
                 if received_data is not None:
-                    main_node.get_logger().info(f'Received from server: {received_data}')
+                    main_node.get_logger().info(f'Received from server: {received_data}\n\n')
 
             rclpy.spin_once(main_node, timeout_sec=0.1)  # Spin the main node for a single iteration
             rclpy.spin_once(recognition_subscriber, timeout_sec=0.1)  # Spin the subscriber node for a single iteration
