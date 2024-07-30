@@ -13,6 +13,6 @@ class V2XConstants:
     fFirstPart = f'<B {fDDateTimeType} {fPosition3D} {fPositionalAccuracy} B' # equipmentType, sDSMTimeStamp, refPos, refPosXYConf, numDetectedObjects
     fDetectedObjectCommonData = '<BBHhBhhBHBHB'
     HDR_FLAG = 0x53415445
-    MSG_RECOGNITION = 0x016792
+    MSG_RECOGNITION = 0x16792
 
     
