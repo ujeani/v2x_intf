@@ -32,7 +32,7 @@ class Parser :
       if msg_type is v2xconst.MSG_RECOGNITION:
         return RecognitionMsg(self.logger).fromV2XMsg(pkd_data[header_size:])
       else :
-        self.logger.info(f'Unknown message type: {msg_type:#X}')
+        self.logger.info(f'Unknown message type: {msg_type} != {v2xconst.MSG_RECOGNITION}')
         return None
     
 
