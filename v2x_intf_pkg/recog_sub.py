@@ -155,7 +155,7 @@ class RecognitionSubscriber(Node):
             v2xconst.fmsgHdrType,
             v2xconst.HDR_FLAG,          # hdr
             v2xconst.MSG_RECOGNITION,   # msgID for recognition
-            len(packed_data)            # msgLen
+            int(len(packed_data))            # msgLen
         )
 
         self.get_logger().info(f'Header data: {hdr_data}, length : {len(hdr_data)}')
