@@ -115,7 +115,7 @@ class RecognitionSubscriber(Node):
             packed_object = struct.pack(
               v2xconst.fDetectedObjectCommonData,
               obj.object_class,
-              obj.object_accuracy,
+              int(obj.recognition_accuracy),
               object_id,
               measurementTimeOffset,
               0, # timeConfidence
