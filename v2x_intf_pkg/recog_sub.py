@@ -137,7 +137,7 @@ class RecognitionSubscriber(Node):
             packed_objects += packed_object
             num_object += 1
             self.get_logger().info(f'--> obj.object_class: {obj.object_class}')
-            self.get_logger().info(f'--> obj.recognition_accuracy: {obj.recognition_accuracy}')
+            self.get_logger().info(f'--> obj.recognition_accuracy: {int(obj.recognition_accuracy)}')
 
 
 
@@ -151,6 +151,8 @@ class RecognitionSubscriber(Node):
           num_object
         )
         packed_data += packed_objects
+
+        self.get_logger().info(f'Packed data: {packed_data}')
 
         # Convert header to C struct data type
         # Ref : v2x_intf_hdr_type
