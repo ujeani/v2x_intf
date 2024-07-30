@@ -119,7 +119,7 @@ class RecognitionSubscriber(Node):
             if heading > 28800 :
                 self.get_logger().info(f'--> heading is out of range')
                 continue
-          
+                      
             packed_object = struct.pack(
               v2xconst.fDetectedObjectCommonData,
               obj.object_class,
@@ -136,6 +136,11 @@ class RecognitionSubscriber(Node):
             )
             packed_objects += packed_object
             num_object += 1
+            self.get_logger().info(f'--> obj.object_class: {obj.object_class}')
+            self.get_logger().info(f'--> obj.recognition_accuracy: {obj.recognition_accuracy}')
+
+
+
 
         packed_data = struct.pack(
           v2xconst.fFirstPart,
