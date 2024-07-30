@@ -22,6 +22,11 @@ class Parser :
     hdr_flag = hdr_values[0]
     msg_type = hdr_values[1]
     msg_len = hdr_values[2]
+
+    
+    self.logger.info(f'msg_type is {type(msg_type)}')
+    else:
+      self.logger.info('msg_type is not int')
     self.logger.info(f'Header data: {hdr_data}')
     self.logger.info(f'--> hdr_flag: {hdr_flag:#X}, msg_type: {msg_type:#X}, msg_len: {msg_len}')
 
