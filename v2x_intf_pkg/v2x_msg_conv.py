@@ -25,6 +25,8 @@ class Parser :
 
     
     self.logger.info(f'msg_type is {type(msg_type)}')
+    self.logger.info(f'v2xconst.MSG_RECOGNITION is {type(v2xconst.MSG_RECOGNITION)}')
+
     self.logger.info(f'Header data: {hdr_data}')
     self.logger.info(f'--> hdr_flag: {hdr_flag:#X}, msg_type: {msg_type:#X}, msg_len: {msg_len}')
 
