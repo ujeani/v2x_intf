@@ -16,6 +16,7 @@ class RecognitionPublisher(Node):
     self.get_logger().info('Recognition publisher initialized')
 
   async def receive_data_async(self):
+    self.get_logger().info('Starting receive_data_async')
     while rclpy.ok():
       self.get_logger().info('Checking for received data, {self.connection_manager.obu_connected}')
       if self.connection_manager.obu_connected:
