@@ -1,12 +1,9 @@
 import rclpy as rclpy
-import threading
-
+from rclpy.executors import MultiThreadedExecutor
 from v2x_intf_pkg.tcpconn_man import TcpConnectionManager
 from v2x_intf_pkg.recog_sub import RecognitionSubscriber
 from v2x_intf_pkg.recog_pub import RecognitionPublisher
 
-def spin_node(node):
-  rclpy.spin(node)
 
 def main(args=None):
   rclpy.init(args=args)
@@ -14,16 +11,13 @@ def main(args=None):
   recognition_publisher = RecognitionPublisher(connection_manager)
   recognition_subscriber = RecognitionSubscriber(connection_manager)
 
-   # Start spinning each node in a separate thread
-  threads = []
-  for node in [recognition_publisher, recognition_subscriber]:
-    thread = threading.Thread(target=spin_node, args=(node,))
-    thread.start()
-    threads.append(thread)
+  executor = MultiThreadedExecutor()
+
+  executor.add_node(recognition_publisher)
+  executor.add_node(recognition_subscriber)
 
   try:
-    for thread in threads:
-      thread.join()  # Wait for all threads to complete  except KeyboardInterrupt:
+    executor.spin() 
   except KeyboardInterrupt:
     recognition_publisher.get_logger().info('Shutting down due to keyboard interrupt.')
 
