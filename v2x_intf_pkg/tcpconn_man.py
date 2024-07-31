@@ -35,6 +35,7 @@ class TcpConnectionManager:
                     return None
 
     def receive_data(self):
+        print("in receive_data")
         with self.lock:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
             print("ready_to_read", ready_to_read)
