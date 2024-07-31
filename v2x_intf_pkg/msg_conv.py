@@ -270,11 +270,12 @@ class RecognitionMsg :
       packed_object = struct.pack(
         v2xconst.fDetectedObjectCommonData,
         obj.object_class,
+        obj.recognition_accuracy,
         object_id,
         measurementTimeOffset,
         0, # timeConfidence
         offsetX, offsetY,
-        0, # posConfidence
+        0, # posConfidenceSet
         speed,
         0, # speedConfidence
         heading,
