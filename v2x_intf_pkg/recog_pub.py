@@ -13,9 +13,11 @@ class RecognitionPublisher(Node):
     self.recognition_publisher = self.create_publisher(Recognition, 'v2x_msgs/r_recognition', 10)   
     self.loop = asyncio.get_event_loop()
     self.loop.create_task(self.receive_data_async())
+    self.get_logger().info('Recognition publisher initialized')
 
   async def receive_data_async(self):
     while rclpy.ok():
+      self.get_logger().info('Checking for received data, {self.connection_manager.obu_connected}')
       if self.connection_manager.obu_connected:
         # Run the blocking receive_data method in a separate thread
         received_data = await self.loop.run_in_executor(None, self.connection_manager.receive_data)
