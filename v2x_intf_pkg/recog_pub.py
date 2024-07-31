@@ -11,7 +11,6 @@ class RecognitionPublisher(Node):
     self.connection_manager = connection_manager
     self.parser = Parser(self.get_logger())
     self.recognition_publisher = self.create_publisher(Recognition, 'v2x_msgs/r_recognition', 10)   
-    # self.timer = self.create_timer(0.1, self.timer_callback)
     self.loop = asyncio.get_event_loop()
     self.loop.create_task(self.receive_data_async())
 
@@ -20,6 +19,7 @@ class RecognitionPublisher(Node):
       if self.connection_manager.obu_connected:
         # Run the blocking receive_data method in a separate thread
         received_data = await self.loop.run_in_executor(None, self.connection_manager.receive_data)
+        self.get_logger().info(f'Received from server: {received_data}')
         if received_data is not None:
           self.get_logger().info(f'Received from server: {received_data}')
                   

@@ -29,16 +29,13 @@ class TcpConnectionManager:
                     # Serialize and send the data to the server
                     # serialized_data = self.serialize_data(data)  # Implement serialization function
                     self.client_socket.send(data)
-                    print(f'Sent to server: {data}')
                 except Exception as e:
                     print('Error:', str(e))
                     return None
 
     def receive_data(self):
-        print("in receive_data")
         with self.lock:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
-            print("ready_to_read", ready_to_read)
             if ready_to_read:                
                 received_data = self.client_socket.recv(1024)
                 # self.receive_buffer += received_data
@@ -48,3 +45,4 @@ class TcpConnectionManager:
     def close_connection(self):
         with self.lock:
             self.client_socket.close()
+            self.obu_connected = False
