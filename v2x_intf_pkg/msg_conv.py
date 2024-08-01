@@ -164,7 +164,7 @@ class RecognitionMsg :
         vehicle_id = vehicle_id,
         vehicle_time = vehicle_time,
         vehicle_position = vehicle_position,
-        object_data = [detected_objects]
+        object_data = detected_objects
       )
       
       self.logger.info(f'Constructed Recognition message: {msg}')
