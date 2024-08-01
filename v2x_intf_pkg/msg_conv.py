@@ -112,11 +112,10 @@ class RecognitionMsg :
     )
     self.logger.info(f'---> vehicle_position: {vehicle_position}')
 
-    positional_accuracy = first_part_values[10:13]  # semiMajor, semiMinor, orientation
+    # positional_accuracy = first_part_values[10:13]  # semiMajor, semiMinor, orientation, currently no need to use this data
     num_detected_objects = first_part_values[13]
 
-    self.logger.info(f'First part data: {first_part_data}')
-    self.logger.info(f'--> equipment_type: {equipment_type}, vehicle_time: {vehicle_time}, vehicle_position: {vehicle_position}, positional_accuracy: {positional_accuracy}, num_detected_objects: {num_detected_objects}')
+    self.logger.info(f'--> equipment_type: {equipment_type}, vehicle_time: {vehicle_time}, vehicle_position: {vehicle_position}, num_detected_objects: {num_detected_objects}')
 
 
     # Calculate the expected length of the detected objects part
