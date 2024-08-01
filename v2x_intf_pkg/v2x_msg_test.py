@@ -28,7 +28,7 @@ class V2XMsgsPub(Node):
             object_data = [od]
         )
         self.pub_rec.publish(re)
-        self.get_logger().info('Publishing: "%s"' % re)
+        self.get_logger().info(f'{self.cnt_run} Publishing: {re}')
         self.cnt_run += 1
 
     def date_time(self, delay):
