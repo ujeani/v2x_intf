@@ -1,4 +1,4 @@
-from v2x_msgs.msg import Recognition
+from v2x_msgs.msg import Recognition, Object
 import struct
 import datetime
 from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
@@ -104,6 +104,8 @@ class RecognitionMsg :
     self.logger.info(f'vehicle_time: {vehicle_time}')
     vehicle_time = vehicle_time[:5] + (vehicle_time[5] // 1000, (vehicle_time[5] % 1000)*1000,)  # milliseconds to seconds and microseconds
     self.logger.info(f'---> vehicle_time: {vehicle_time}')
+    v_t = datetime.datetime(*vehicle_time)
+    self.logger.info(f'---> v_t: {v_t}')
 
     self.logger.info(f'vehicle_position: {first_part_values[8:10]}')
     vehicle_position = (
@@ -135,36 +137,35 @@ class RecognitionMsg :
       self.logger.error(f'Number of detected objects {num_detected_objects} exceeds maximum 256, set to 256')
       num_detected_objects = 256
 
+    vehicle_id = 0
     for i in range(num_detected_objects):
       start_index = first_part_size + i * detected_object_size
       end_index = start_index + detected_object_size
       object_data = data[start_index:end_index]
       object_values = struct.unpack(v2xconst.fDetectedObjectCommonData, object_data)
-
-      detected_object = {
-        'object_class': object_values[0],
-        'recognition_accuracy': object_values[1],
-        'object_id': object_values[2],
-        'measurementTimeOffset': object_values[3],
-        'timeConfidence': object_values[4],
-        'offsetX': object_values[5],
-        'offsetY': object_values[6],
-        'posConfidence': object_values[7],
-        'speed': object_values[8],
-        'speedConfidence': object_values[9],
-        'heading': object_values[10],
-        'headingConfidence': object_values[11]
-      }
+      
+      vehicle_id = object_values[2] >> 8
+      detected_object = Object(
+        detection_time = v_t + datetime.timedelta(milliseconds=object_values[3]),
+        object_position = [float(object_values[5])/10.0. float(object_values[6])/10.0],
+        object_velocity = float(object_values[8])*0.02,
+        object_heading = float(object_values[10])*0.0125,
+        object_class = object_values[0],
+        recognition_accuracy = object_values[1]
+      )
 
       detected_objects.append(detected_object)
       self.logger.info(f'Detected object {i}: {detected_object}')
 
       # Construct the message object
-      msg = Recognition()
-      msg.vehicle_time = vehicle_time
-      msg.vehicle_position = vehicle_position
-      msg.object_data = detected_objects
-
+      msg = Recognition(
+        vehicle_id = vehicle_id,
+        vehicle_time = vehicle_time,
+        vehicle_position = vehicle_position,
+        object_data = [detected_objects]
+      )
+      
+      self.logger.info(f'Constructed Recognition message: {msg}')
       return msg
 
   
@@ -193,7 +194,7 @@ class RecognitionMsg :
     self.logger.info(f'msg.vehicle_time: {msg.vehicle_time}')
     self.logger.info(f'--> sDSMTimeStamp: {sDSMTimeStamp}')
     # Create datetime objects, including milliseconds to calculate measurementTimeOffset
-    dt1 = datetime.datetime(
+    v_t = datetime.datetime(
       msg.vehicle_time[0],  # year
       msg.vehicle_time[1],  # month
       msg.vehicle_time[2],  # day
@@ -222,12 +223,11 @@ class RecognitionMsg :
       65535 # orientation
     )
 
-
     packed_objects = b''
     num_object = 0
     for idx, obj in enumerate(msg.object_data) :
       # Create datetime objects, including milliseconds to calculate measurementTimeOffset
-      dt2 = datetime.datetime(
+      o_t = datetime.datetime(
         obj.detection_time[0],  # year
         obj.detection_time[1],  # month
         obj.detection_time[2],  # day
@@ -237,8 +237,8 @@ class RecognitionMsg :
         obj.detection_time[6]   # microsecond
       )
       self.logger.info(f'obj.detection_time: {obj.detection_time}')
-      measurementTimeOffset = int((dt2-dt1).total_seconds()*1000) # in milliseconds for MeasurementTimeOffset type # it should have -1500 ~ 1500 in 1ms unit (-1.5 sec ~ 1.5 sec)
-      self.logger.info(f'--> (dt2-dt1).total_seconds(): {(dt2-dt1).total_seconds()}')
+      measurementTimeOffset = int((o_t-v_t).total_seconds()*1000) # in milliseconds for MeasurementTimeOffset type # it should have -1500 ~ 1500 in 1ms unit (-1.5 sec ~ 1.5 sec)
+      self.logger.info(f'--> (dt2-dt1).total_seconds(): {(o_t-v_t).total_seconds()}')
       self.logger.info(f'--> measurementTimeOffset: {measurementTimeOffset}')
           
       if measurementTimeOffset > 1500 or measurementTimeOffset < -1500 : # sDSMTimeStamp보다 1.5초 빨리 디텍트한 객체
