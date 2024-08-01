@@ -99,8 +99,10 @@ class RecognitionMsg :
     equipment_type = first_part_values[0]
 
     self.logger.info(f"V2X Recognition message from {'OBU' if equipment_type == 2 else 'RSU'}")
-    vehicle_time = first_part_values[1:8]  # year, month, day, hour, minute, second, milliseconds
+    vehicle_time = first_part_values[1:8]  # year, month, day, hour, minute, milliseconds, timeoffset
+    self.logger.info(f'vehicle_time: {vehicle_time}')
     vehicle_time = vehicle_time[:6] + (vehicle_time[6] // 1000, (vehicle_time[6] % 1000)*1000,)  # milliseconds to seconds and microseconds
+    self.logger.info(f'---> vehicle_time: {vehicle_time}')
                                        
     vehicle_position = first_part_values[8:10]  # latitude, longitude
     positional_accuracy = first_part_values[10:13]  # semiMajor, semiMinor, orientation
