@@ -4,7 +4,7 @@ from rclpy.node import Node
 from v2x_intf_msg.msg import Recognition
 from v2x_intf_pkg.msg_conv import Parser
 import asyncio
-import datetime
+from datetime import datetime
 
 class RecognitionPublisher(Node):
   def __init__(self, connection_manager):
