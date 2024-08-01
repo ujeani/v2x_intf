@@ -4,6 +4,7 @@ from rclpy.node import Node
 from v2x_intf_msg.msg import Recognition
 from v2x_intf_pkg.msg_conv import Parser
 import asyncio
+import datetime
 
 class RecognitionPublisher(Node):
   def __init__(self, connection_manager):
@@ -16,19 +17,18 @@ class RecognitionPublisher(Node):
     self.get_logger().info('Recognition publisher initialized')
 
   async def receive_data_async(self):
-    self.get_logger().info('Starting receive_data_async')
     while rclpy.ok():
       if self.connection_manager.obu_connected:
         # Run the blocking receive_data method in a separate thread
         received_data = await self.loop.run_in_executor(None, self.connection_manager.receive_data)
         if received_data is not None:
-                  
+          self.get_logger().info(f'(V2X->) received data at {datetime.now()}')          
           # Parse the received data
           recognition_msg = self.parser.parse(received_data)
           if recognition_msg is not None:
             # Publish the Recognition message
+            self.get_logger().info(f'(->ROS2) Publish recognition message at {datetime.now()}: {recognition_msg}')    
             self.recognition_publisher.publish(recognition_msg)
-            self.get_logger().info(f'Published recognition message: {recognition_msg}')    
 
   def shutdown(self):
     self.connection_manager.close_connection()

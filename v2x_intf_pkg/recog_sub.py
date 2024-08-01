@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from v2x_intf_msg.msg import Recognition
 from v2x_intf_pkg.msg_conv import RecognitionMsg
+import datetime
 
 class RecognitionSubscriber(Node):
   def __init__(self, connection_manager):
@@ -20,12 +21,13 @@ class RecognitionSubscriber(Node):
     self.get_logger().info('Recognition subscriber initialized')
     
   def recognition_callback(self, msg):
-    self.get_logger().info(f'Received recognition message {msg}')
+    self.get_logger().info(f'(ROS2->) Received recognition message at {datetime.now()} : {msg}')
     recogMsg = RecognitionMsg(self.get_logger())
     try:
       data = recogMsg.toV2XMsg(msg)
       # Send the received message data to the server over the shared TCP connection
       if data :
+        self.get_logger().info(f'(->V2X) Send recognition message at {datetime.now()} : {data}')
         self.connection_manager.send_data(data)
     except Exception as e:
       self.get_logger().error(f'Error processing recognition message: {e}')

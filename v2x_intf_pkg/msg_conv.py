@@ -47,9 +47,6 @@ class Parser :
     msg_type = hdr_values[1]
     msg_len = hdr_values[2]
     
-    self.logger.info(f'Header data: {hdr_data}')
-    self.logger.info(f'--> hdr_flag: {hdr_flag:#X}, msg_type: {msg_type:#X}, msg_len: {msg_len}')
-
     if hdr_flag is v2xconst.HDR_FLAG:
       self.info('Invalid header flag: %d' % hdr_flag)
       return None
@@ -97,28 +94,17 @@ class RecognitionMsg :
     first_part_data = data[:first_part_size]
     first_part_values = struct.unpack(v2xconst.fFirstPart, first_part_data)
     equipment_type = first_part_values[0]
-
-    self.logger.info(f"V2X Recognition message from {'OBU' if equipment_type == 2 else 'RSU'}")
-
     vehicle_time = first_part_values[1:8]  # year, month, day, hour, minute, milliseconds, timeoffset
-    self.logger.info(f'vehicle_time: {vehicle_time}')
     vehicle_time = vehicle_time[:5] + (vehicle_time[5] // 1000, (vehicle_time[5] % 1000)*1000,)  # milliseconds to seconds and microseconds
-    self.logger.info(f'---> vehicle_time: {vehicle_time}')
     v_t = datetime.datetime(*vehicle_time)
-    self.logger.info(f'---> v_t: {v_t}')
-
-    self.logger.info(f'vehicle_position: {first_part_values[8:10]}')
+    self.logger.info(f'(V2X->) Receive data created at {v_t}')
     vehicle_position = (
       first_part_values[8]/(1000*1000*10),  # latitude
       first_part_values[9]/(1000*1000*10)  # longitude
     )
-    self.logger.info(f'---> vehicle_position: {vehicle_position}')
 
     # positional_accuracy = first_part_values[10:13]  # semiMajor, semiMinor, orientation, currently no need to use this data
     num_detected_objects = first_part_values[13]
-
-    self.logger.info(f'--> equipment_type: {equipment_type}, vehicle_time: {vehicle_time}, vehicle_position: {vehicle_position}, num_detected_objects: {num_detected_objects}')
-
 
     # Calculate the expected length of the detected objects part
     detected_object_size = struct.calcsize(v2xconst.fDetectedObjectCommonData)
@@ -145,9 +131,7 @@ class RecognitionMsg :
       object_values = struct.unpack(v2xconst.fDetectedObjectCommonData, object_data)
       
       vehicle_id = object_values[2] >> 8
-      self.logger.info(f'measurementTimeOffset: {object_values[3]}')
       o_t = v_t + datetime.timedelta(milliseconds=object_values[3])
-      self.logger.info(f'detection_time: {o_t}')
       detected_object = Object(
         detection_time = [o_t.year, o_t.month, o_t.day, o_t.hour, o_t.minute, o_t.second, o_t.microsecond],
         object_position = [float(object_values[5])/10.0, float(object_values[6])/10.0],
@@ -158,7 +142,6 @@ class RecognitionMsg :
       )
 
       detected_objects.append(detected_object)
-      self.logger.info(f'Detected object {i}: {detected_object}')
 
       # Construct the message object
       msg = Recognition(
@@ -168,7 +151,6 @@ class RecognitionMsg :
         object_data = detected_objects
       )
       
-      self.logger.info(f'Constructed Recognition message: {msg}')
       return msg
 
   
@@ -194,8 +176,6 @@ class RecognitionMsg :
       msg.vehicle_time[5]*1000+(msg.vehicle_time[6]//1000), # milliseconds
       9*60 # Timezone in minutes
     )
-    self.logger.info(f'msg.vehicle_time: {msg.vehicle_time}')
-    self.logger.info(f'--> sDSMTimeStamp: {sDSMTimeStamp}')
     # Create datetime objects, including milliseconds to calculate measurementTimeOffset
     v_t = datetime.datetime(
       msg.vehicle_time[0],  # year
@@ -206,18 +186,17 @@ class RecognitionMsg :
       msg.vehicle_time[5],  # second
       msg.vehicle_time[6]   # microsecond
     )
+    self.logger.info(f'(ROS->): Data created at {v_t}')
     position3D = (
       int(msg.vehicle_position[0]*1000*1000*10), # Latitude in 1/10th microdegree
       int(msg.vehicle_position[1]*1000*1000*10)  # Longitude in 1/10th microdegree
     )
-    self.logger.info(f'msg.vehicle_position: {msg.vehicle_position}')
-    self.logger.info(f'--> position3D: {position3D}')
     if position3D[0] > 900000000 or position3D[0] < -900000000 :
-      self.logger.info(f'--> Latitude is out of range')
+      self.logger.info(f'Latitude is out of range {position3D[0]}')
       return None
       
     if position3D[1] > 1800000000 or position3D[1] < -1800000000 :
-      self.logger.info(f'--> Longitude is out of range')
+      self.logger.info(f'Longitude is out of range {position3D[1]}')
       return None
     
     positionAccuracy = (
@@ -239,31 +218,23 @@ class RecognitionMsg :
         obj.detection_time[5],  # second
         obj.detection_time[6]   # microsecond
       )
-      self.logger.info(f'obj.detection_time: {obj.detection_time}')
       measurementTimeOffset = int((o_t-v_t).total_seconds()*1000) # in milliseconds for MeasurementTimeOffset type # it should have -1500 ~ 1500 in 1ms unit (-1.5 sec ~ 1.5 sec)
-      self.logger.info(f'--> (dt2-dt1).total_seconds(): {(o_t-v_t).total_seconds()}')
-      self.logger.info(f'--> measurementTimeOffset: {measurementTimeOffset}')
           
       if measurementTimeOffset > 1500 or measurementTimeOffset < -1500 : # sDSMTimeStamp보다 1.5초 빨리 디텍트한 객체
-        self.logger.info(f'--> measurementTimeOffset is out of range')
+        self.logger.info(f'measurementTimeOffset is out of range {measurementTimeOffset}')
         continue
           
       object_id = msg.vehicle_id << 8 + idx  # vehicle_id는 제어부에서 임의로 설정되는데 현재 3대의 자율차에 1,2,3으로 할당.
-      self.logger.info(f'--> object_id: {object_id:#X}')
           
       offsetX = int(obj.object_position[0]*10)
       offsetY = int(obj.object_position[1]*10)
-      self.logger.info(f'obj.object_position {obj.object_position}')
-      self.logger.info(f'--> offsetX: {offsetX}, offsetY: {offsetY}')
       if offsetX > 32767 or offsetX < -32767 or offsetY > 32767 or offsetY < -32767 :
-        self.logger.info(f'--> offsetX or offsetY is out of range')
+        self.logger.info(f'offsetX or offsetY is out of range [{offsetX}, {offsetY}')
         continue
           
       speed = int(obj.object_velocity / 0.02)
-      self.logger.info(f'obj.object_velocity: {obj.object_velocity}')
-      self.logger.info(f'--> speed: {speed}')
       if speed > 8191 :
-        self.logger.info(f'--> speed is out of range')
+        self.logger.info(f'speed is out of range {speed}')
         speed = 8192 # represents "speed is unavailable"
           
       if obj.object_heading < 0.0 :
@@ -271,9 +242,8 @@ class RecognitionMsg :
 
       heading = int(((obj.object_heading)%360.0)/0.0125)  # in 0.0125 degree unit
       self.logger.info(f'obj.object_heading: {obj.object_heading}')
-      self.logger.info(f'--> heading: {heading}')
       if heading > 28800 :
-        self.logger.info(f'--> heading is out of range')
+        self.logger.info(f'--> heading is out of range {heading}')
         continue
                     
       packed_object = struct.pack(
@@ -293,7 +263,6 @@ class RecognitionMsg :
       packed_objects += packed_object
       num_object += 1
       if num_object >= 256 :
-        self.logger.info(f'--> Support 256 objects')
         break
 
 
