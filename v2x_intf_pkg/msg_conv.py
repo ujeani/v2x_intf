@@ -145,6 +145,7 @@ class RecognitionMsg :
       object_values = struct.unpack(v2xconst.fDetectedObjectCommonData, object_data)
       
       vehicle_id = object_values[2] >> 8
+      self.logger.info(f'measurementTimeOffset: {object_values[3]}')
       o_t = v_t + datetime.timedelta(milliseconds=object_values[3])
       self.logger.info(f'detection_time: {o_t}')
       detected_object = Object(

@@ -24,16 +24,8 @@ class RecognitionPublisher(Node):
         if received_data is not None:
                   
           # Parse the received data
-          recognition_data = self.parser.parse(received_data)
-
-          if recognition_data is not None:
-            # Convert parsed data to Recognition message
-            recognition_msg = Recognition()
-            # Assuming recognition_data contains the necessary fields for the Recognition message
-            # recognition_msg.field1 = recognition_data.field1  # Modify these fields based on actual message fields
-            # recognition_msg.field2 = recognition_data.field2
-            # Add more fields as necessary
-
+          recognition_msg = self.parser.parse(received_data)
+          if recognition_msg is not None:
             # Publish the Recognition message
             self.recognition_publisher.publish(recognition_msg)
             self.get_logger().info(f'Published recognition message: {recognition_msg}')    
