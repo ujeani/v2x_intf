@@ -27,7 +27,7 @@ class RecognitionSubscriber(Node):
       data = recogMsg.toV2XMsg(msg)
       # Send the received message data to the server over the shared TCP connection
       if data :
-        self.get_logger().info(f'(->V2X) Send recognition message at {datetime.now()} : {data}')
+        self.get_logger().info(f'(->V2X) Send recognition message at {datetime.now()}')
         self.connection_manager.send_data(data)
     except Exception as e:
       self.get_logger().error(f'Error processing recognition message: {e}')

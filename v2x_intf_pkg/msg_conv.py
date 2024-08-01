@@ -229,21 +229,20 @@ class RecognitionMsg :
       offsetX = int(obj.object_position[0]*10)
       offsetY = int(obj.object_position[1]*10)
       if offsetX > 32767 or offsetX < -32767 or offsetY > 32767 or offsetY < -32767 :
-        self.logger.info(f'offsetX or offsetY is out of range [{offsetX}, {offsetY}')
+        self.logger.info(f'obj.object_position is out of range {obj.object_position}')
         continue
           
       speed = int(obj.object_velocity / 0.02)
       if speed > 8191 :
-        self.logger.info(f'speed is out of range {speed}')
+        self.logger.info(f'obj.object_velocity is out of range {obj.object_velocity}')
         speed = 8192 # represents "speed is unavailable"
           
       if obj.object_heading < 0.0 :
         obj.object_heading += 360.0
 
       heading = int(((obj.object_heading)%360.0)/0.0125)  # in 0.0125 degree unit
-      self.logger.info(f'obj.object_heading: {obj.object_heading}')
       if heading > 28800 :
-        self.logger.info(f'--> heading is out of range {heading}')
+        self.logger.info(f'obj.object_heading is out of range {obj.object_heading}')
         continue
                     
       packed_object = struct.pack(
