@@ -20,12 +20,18 @@ def main(args=None):
   loop = asyncio.get_event_loop()
 
   def run_ros2():
-    rclpy.spin()
+    try :
+      executor.spin()
+    finally:
+      executor.shutdown()
 
-  try:
     ros_thread = threading.Thread(target=run_ros2)
     ros_thread.start()
+
     loop.run_forever() 
+
+  try:
+    loop.run_forever()
   except KeyboardInterrupt:
     recognition_publisher.get_logger().info('Shutting down due to keyboard interrupt.')
 
