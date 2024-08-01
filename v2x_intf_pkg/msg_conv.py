@@ -147,7 +147,7 @@ class RecognitionMsg :
       vehicle_id = object_values[2] >> 8
       detected_object = Object(
         detection_time = v_t + datetime.timedelta(milliseconds=object_values[3]),
-        object_position = [float(object_values[5])/10.0. float(object_values[6])/10.0],
+        object_position = [float(object_values[5])/10.0, float(object_values[6])/10.0],
         object_velocity = float(object_values[8])*0.02,
         object_heading = float(object_values[10])*0.0125,
         object_class = object_values[0],
