@@ -28,8 +28,6 @@ def main(args=None):
     ros_thread = threading.Thread(target=ros_spin)
     ros_thread.start()
 
-    loop = asyncio.get_event_loop()
-
   try:
     loop.run_forever()
   except KeyboardInterrupt:
@@ -41,6 +39,8 @@ def main(args=None):
     recognition_publisher.destroy_node()
     recognition_subscriber.destroy_node()
     rclpy.shutdown()
+    loop.stop()
+    ros_thread.join()
 
 if __name__ == '__main__':
     main()
