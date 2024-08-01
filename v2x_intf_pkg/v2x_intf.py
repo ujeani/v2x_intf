@@ -1,4 +1,5 @@
 import rclpy as rclpy
+import asyncio
 from rclpy.executors import MultiThreadedExecutor
 from v2x_intf_pkg.tcpconn_man import TcpConnectionManager
 from v2x_intf_pkg.recog_sub import RecognitionSubscriber
@@ -12,12 +13,18 @@ def main(args=None):
   recognition_subscriber = RecognitionSubscriber(connection_manager)
 
   executor = MultiThreadedExecutor()
-
   executor.add_node(recognition_publisher)
   executor.add_node(recognition_subscriber)
 
+  loop = asyncio.get_event_loop()
+
+  def run_ros2():
+    rclpy.spin()
+
   try:
-    executor.spin() 
+    ros_thread = threading.Thread(target=run_ros2)
+    ros_thread.start()
+    loop.run_forever() 
   except KeyboardInterrupt:
     recognition_publisher.get_logger().info('Shutting down due to keyboard interrupt.')
 
