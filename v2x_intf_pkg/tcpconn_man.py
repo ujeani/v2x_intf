@@ -20,7 +20,6 @@ class TcpConnectionManager:
             self.obu_connected = True
         except Exception as e:
             print('Error:', str(e))
-            self.socket.socket.close()
             self.obu_connected = False
 
     def open_connection(self):
@@ -36,7 +35,6 @@ class TcpConnectionManager:
                 return self.obu_connected
             except Exception as e:
                 print('open_connection Error:', str(e))
-                self.socket.socket.close()
                 self.obu_connected = False
                 return self.obu_connected
 
@@ -44,8 +42,6 @@ class TcpConnectionManager:
         if self.obu_connected :
             with self.lock:
                 try:
-                    # Serialize and send the data to the server
-                    # serialized_data = self.serialize_data(data)  # Implement serialization function
                     self.client_socket.send(data)
                 except Exception as e:
                     print('send_data Error:', str(e))
