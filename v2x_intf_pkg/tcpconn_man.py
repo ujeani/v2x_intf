@@ -22,6 +22,20 @@ class TcpConnectionManager:
             print('Error:', str(e))
             self.obu_connected = False
 
+    def open_connection(self):
+        with self.lock:
+            if self.client_socket is not None:
+                return self.obu_connected
+            try:
+                self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.client_socket.connect((self.obu_ip, self.obu_port))
+                self.obu_connected = True
+                return self.obu_connected
+            except Exception as e:
+                print('Error:', str(e))
+                self.obu_connected = False
+                return self.obu_connected
+
     def send_data(self, data):
         if self.obu_connected :
             with self.lock:
