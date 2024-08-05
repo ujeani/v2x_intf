@@ -20,6 +20,7 @@ class TcpConnectionManager:
             self.obu_connected = True
         except Exception as e:
             print('Error:', str(e))
+            self.client_socket = None
             self.obu_connected = False
 
     def open_connection(self):
@@ -35,6 +36,7 @@ class TcpConnectionManager:
                 return self.obu_connected
             except Exception as e:
                 print('open_connection Error:', str(e))
+                self.client_socket = None
                 self.obu_connected = False
                 return self.obu_connected
 
@@ -46,6 +48,7 @@ class TcpConnectionManager:
                 except Exception as e:
                     print('send_data Error:', str(e))
                     self.client_socket.close()
+                    self.client_socket = None
                     self.obu_connected = False
                     return None
 
