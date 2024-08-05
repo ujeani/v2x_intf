@@ -26,13 +26,14 @@ class TcpConnectionManager:
         with self.lock:
             if self.client_socket is not None:
                 return self.obu_connected
+            
             try:
                 self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.client_socket.connect((self.obu_ip, self.obu_port))
                 self.obu_connected = True
                 return self.obu_connected
             except Exception as e:
-                print('Error:', str(e))
+                print('open_connection Error:', str(e))
                 self.obu_connected = False
                 return self.obu_connected
 
@@ -44,7 +45,9 @@ class TcpConnectionManager:
                     # serialized_data = self.serialize_data(data)  # Implement serialization function
                     self.client_socket.send(data)
                 except Exception as e:
-                    print('Error:', str(e))
+                    self.obu_connected = False
+                    self.client_socket.close()
+                    print('send_data Error:', str(e))
                     return None
 
     def receive_data(self):
@@ -52,7 +55,6 @@ class TcpConnectionManager:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
             if ready_to_read:                
                 received_data = self.client_socket.recv(1024)
-                # self.receive_buffer += received_data
                 return received_data #.decode()
             return None
 
