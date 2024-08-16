@@ -6,7 +6,7 @@ from datetime import datetime
 
 class SubRecognition(Node):
   def __init__(self, connection_manager):
-    super().__init__('recognition_subscriber')
+    super().__init__('V2X_Recognition')
 
     self.equipmentType = 2 # unknown (0), rsu (1), obu (2)
     self.subscription = self.create_subscription(
