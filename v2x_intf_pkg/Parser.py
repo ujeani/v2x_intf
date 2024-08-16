@@ -40,7 +40,6 @@ class Parser :
       return None
 
     hdr = hdrfmt.v2x_intf_hdr_type()
-
     ctypes.memmove(ctypes.addressof(hdr), pkd_data[:ctypes.sizeof(hdrfmt.v2x_intf_hdr_type)], ctypes.sizeof(hdrfmt.v2x_intf_hdr_type))
 
     hdr_flag = hdr.hdr_flag
@@ -52,8 +51,11 @@ class Parser :
       self.info('Invalid header flag: %d' % hdr_flag)
       return None
     else :
-      if len(pkd_data) - ctypes.sizeof(hdrfmt.v2x_intf_hdr_type) != msg_len:  # Check message length
-        self.logger.error(f"Data size {len(pkd_data) - header_size} does not match header msg_len {msg_len}")
+      header_size = ctypes.sizeof(hdrfmt.v2x_intf_hdr_type)
+      data_len = len(pkd_data)
+      self.logger.info(f'Parsing header: {hdr_flag}, {msg_type}, {msg_len}, {header_size}, {data_len}')
+      if data_len - header_size != msg_len:  # Check message length
+        self.logger.error(f"Data size {data_len - header_size} does not match header msg_len {msg_len}")
         return None
       if msg_type == v2xconst.MSG_RECOGNITION :
         return MsgProcRecognition(self.logger).fromV2XMsg(pkd_data)
