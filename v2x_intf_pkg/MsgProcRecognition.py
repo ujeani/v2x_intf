@@ -162,7 +162,7 @@ class MsgProcRecognition:
     recog_msg.data.sDSMTimeStamp.day = msg.vehicle_time[2]  # day
     recog_msg.data.sDSMTimeStamp.hour = msg.vehicle_time[3] # hour
     recog_msg.data.sDSMTimeStamp.minute = msg.vehicle_time[4] # minute
-    recog_msg.data.sDSMTimeStamp.second = msg.vehicle_time[5]*1000+(msg.vehicle_time[6]//1000), # milliseconds
+    recog_msg.data.sDSMTimeStamp.second = msg.vehicle_time[5]*1000+(msg.vehicle_time[6]//1000) # milliseconds
     recog_msg.data.sDSMTimeStamp.offset = 9*60 # Timezone in minutes
 
 
@@ -178,7 +178,7 @@ class MsgProcRecognition:
     )
     self.logger.info(f'(ROS->): Data created at {v_t}')
 
-    recog_msg.data.refPos.latitude = int(msg.vehicle_position[0]*1000*1000*10), # Latitude in 1/10th microdegree
+    recog_msg.data.refPos.latitude = int(msg.vehicle_position[0]*1000*1000*10) # Latitude in 1/10th microdegree
     recog_msg.data.refPos.longitude = int(msg.vehicle_position[1]*1000*1000*10)  # Longitude in 1/10th microdegree
     
 
