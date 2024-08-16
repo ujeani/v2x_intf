@@ -1,6 +1,8 @@
 from v2x_intf_msg.msg import Recognition, Object
 import struct
+import ctypes
 from v2x_intf_pkg.V2XConstants import V2XConstants as v2xconst
+import v2x_intf_pkg.FmtHdr as hdrfmt
 from v2x_intf_pkg.MsgProcRecognition import MsgProcRecognition
 
 class Parser :
@@ -37,20 +39,20 @@ class Parser :
       self.logger.error("Input data is not bytes")
       return None
 
-    # Unpack the header
-    header_size = struct.calcsize(v2xconst.fmsgHdrType)
-    hdr_data = pkd_data[:header_size]
-    hdr_values = struct.unpack(v2xconst.fmsgHdrType, hdr_data)
+    hdr = hdrfmt.v2x_intf_hdr_type()
 
-    hdr_flag = hdr_values[0]
-    msg_type = hdr_values[1]
-    msg_len = hdr_values[2]
+    ctypes.memmove(ctypes.addressof(hdr), pkd_data[:ctypes.sizeof(hdrfmt.v2x_intf_hdr_type)], ctypes.sizeof(hdrfmt.v2x_intf_hdr_type))
+
+    hdr_flag = hdr.hdr_flag
+    msg_type = hdr.msgID
+    msg_len = hdr.msgLen
     
+    self.logger.info(f'Parsing header: {hdr_flag}, {msg_type}, {msg_len}')
     if hdr_flag is v2xconst.HDR_FLAG:
       self.info('Invalid header flag: %d' % hdr_flag)
       return None
     else :
-      if len(pkd_data) - header_size != msg_len:  # Check message length
+      if len(pkd_data) - ctypes.sizeof(hdrfmt.v2x_intf_hdr_type) != msg_len:  # Check message length
         self.logger.error(f"Data size {len(pkd_data) - header_size} does not match header msg_len {msg_len}")
         return None
       if msg_type == v2xconst.MSG_RECOGNITION :

@@ -3,6 +3,7 @@ import datetime
 import ctypes
 from v2x_intf_pkg.V2XConstants import V2XConstants as v2xconst
 import v2x_intf_pkg.FmtRecognition as recogfmt
+import v2x_intf_pkg.FmtHdr as hdrfmt
 
 class MsgProcRecognition:
   """
@@ -37,11 +38,11 @@ class MsgProcRecognition:
     # Create an empty v2x_recognition_msg_type instance
     recog_msg = recogfmt.v2x_recognition_msg_type()
 
-    # Parse the header part
-    ctypes.memmove(ctypes.addressof(recog_msg.hdr), data[:ctypes.sizeof(recogfmt.v2x_intf_hdr_type)], ctypes.sizeof(recogfmt.v2x_intf_hdr_type))
+    # Just move the header part
+    ctypes.memmove(ctypes.addressof(recog_msg.hdr), data[:ctypes.sizeof(hdrfmt.v2x_intf_hdr_type)], ctypes.sizeof(hdrfmt.v2x_intf_hdr_type))
 
     # Parse the fixed part of the recognition_data_type
-    offset = ctypes.sizeof(recogfmt.v2x_intf_hdr_type)
+    offset = ctypes.sizeof(hdrfmt.v2x_intf_hdr_type)
     ctypes.memmove(ctypes.addressof(recog_msg.data), data[offset:offset + ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)], ctypes.sizeof(v2xfmt.recognition_data_fixed_part_type))
 
     # Calculate the number of detected objects

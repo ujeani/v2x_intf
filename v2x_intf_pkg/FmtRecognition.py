@@ -1,4 +1,6 @@
 import ctypes
+# from v2x_intf_pkg.FmtHdr import v2x_intf_hdr_type
+import v2x_intf_pkg.FmtHdr as hdrfmt
 
 # Define the DDateTimeType structure
 class DDateTimeType(ctypes.Structure):
@@ -51,12 +53,12 @@ class DetectedObjectCommonData(ctypes.Structure):
     ]
 
 # Define the v2x_intf_hdr_type structure
-class v2x_intf_hdr_type(ctypes.Structure):
-    _fields_ = [
-        ("hdr_flag", ctypes.c_uint),  # unsigned int
-        ("msgID", ctypes.c_uint),     # unsigned int
-        ("msgLen", ctypes.c_uint)     # unsigned int
-    ]
+# class v2x_intf_hdr_type(ctypes.Structure):
+#     _fields_ = [
+#         ("hdr_flag", ctypes.c_uint),  # unsigned int
+#         ("msgID", ctypes.c_uint),     # unsigned int
+#         ("msgLen", ctypes.c_uint)     # unsigned int
+#     ]
 
 # Define the recognition_data_type structure
 class recognition_data_type(ctypes.Structure):
@@ -81,7 +83,7 @@ class recognition_data_fixed_part_type(ctypes.Structure):
 # Define the v2x_recognition_msg_type structure
 class v2x_recognition_msg_type(ctypes.Structure):
     _fields_ = [
-        ("hdr", v2x_intf_hdr_type),     # v2x_intf_hdr_type structure
+        ("hdr", hdrfmt.v2x_intf_hdr_type),     # v2x_intf_hdr_type structure
         ("data", recognition_data_fixed_part_type), # recognition_data_fixed_part_type structure
         ("objects", ctypes.POINTER(DetectedObjectCommonData)) # Pointer to DetectedObjectCommonData array
     ]
