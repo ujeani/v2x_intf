@@ -45,6 +45,8 @@ class MsgProcRecognition:
     fixed_size = ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)
     ctypes.memmove(ctypes.addressof(recog_msg.data), data[hdr_size:(hdr_size+fixed_size)], fixed_size)
 
+    self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
+
     # Calculate the number of detected objects
     num_objects = recog_msg.data.numDetectedObjects
     self.logger.info(f'(V2X->) Number of detected objects: {num_objects}')  
@@ -189,6 +191,9 @@ class MsgProcRecognition:
       recog_msg.data.numDetectedObjects = 255
       num_objects = 255
       self.logger.info(f'Number of detected objects is over 256, set to 255')
+
+    self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
+
 
     objects_array = (recogfmt.DetectedObjectCommonData * num_objects)()
     for idx, obj in enumerate(msg.object_data) :
