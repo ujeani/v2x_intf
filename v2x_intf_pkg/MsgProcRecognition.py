@@ -90,7 +90,7 @@ class MsgProcRecognition:
     for i in range(num_detected_objects):
       obj = recog_msg.objects[i]
       vehicle_id = obj.objectID >> 8
-      o_t = v_t + datetime.timedelta(milliseconds=obj.measurementTime)
+      o_t = v_t + datetime.timedelta(milliseconds=float(obj.measurementTime))
       detected_object = Object(
         detection_time = [o_t.year, o_t.month, o_t.day, o_t.hour, o_t.minute, o_t.second, o_t.microsecond],
         object_position = [float(obj.pos.offsetX)/10.0, float(obj.pos.offsetY)/10.0],
@@ -167,8 +167,8 @@ class MsgProcRecognition:
     )
     self.logger.info(f'(ROS->): Data created at {v_t}')
 
-    recog_msg.data.refPos.latitude = int(msg.vehicle_position[0]*1000*1000*10) # Latitude in 1/10th microdegree
-    recog_msg.data.refPos.longitude = int(msg.vehicle_position[1]*1000*1000*10)  # Longitude in 1/10th microdegree
+    recog_msg.data.refPos.latitude = int(float(msg.vehicle_position[0])*1000.0*1000.0*10.0) # Latitude in 1/10th microdegree
+    recog_msg.data.refPos.longitude = int(float(msg.vehicle_position[1])*1000.0*1000.0*10.0)  # Longitude in 1/10th microdegree
     
 
     if recog_msg.data.refPos.latitude > 900000000 or recog_msg.data.refPos.latitude < -900000000 :
@@ -205,7 +205,7 @@ class MsgProcRecognition:
         obj.detection_time[5],  # second
         obj.detection_time[6]   # microsecond
       )
-      measurementTimeOffset = int((o_t-v_t).total_seconds()*1000) # in milliseconds for MeasurementTimeOffset type # it should have -1500 ~ 1500 in 1ms unit (-1.5 sec ~ 1.5 sec)
+      measurementTimeOffset = int((o_t-v_t).total_seconds()*1000.0) # in milliseconds for MeasurementTimeOffset type # it should have -1500 ~ 1500 in 1ms unit (-1.5 sec ~ 1.5 sec)
       if measurementTimeOffset > 1500 :
         self.logger.info(f'measurementTimeOffset is out of range {measurementTimeOffset}')
         measurementTimeOffset = 1500
@@ -213,8 +213,8 @@ class MsgProcRecognition:
         self.logger.info(f'measurementTimeOffset is out of range {measurementTimeOffset}')
         measurementTimeOffset = -1500
         
-      offsetX = int(obj.object_position[0]*10)
-      offsetY = int(obj.object_position[1]*10)
+      offsetX = int(float(obj.object_position[0])*10.0)
+      offsetY = int(float(obj.object_position[1])*10.0)
       if offsetX > 32767 :
         self.logger.info(f'obj.object_position is out of range {offsetX}')
         offsetX = 32767
@@ -228,7 +228,7 @@ class MsgProcRecognition:
         self.logger.info(f'obj.object_position is out of range {offsetY}')
         offsetY = -32767
           
-      speed = int(obj.object_velocity / 0.02)
+      speed = int(float(obj.object_velocity) / 0.02)
       if speed > 8191 :
         self.logger.info(f'obj.object_velocity is out of range {obj.object_velocity}')
         speed = 8192 # represents "speed is unavailable"
@@ -236,14 +236,14 @@ class MsgProcRecognition:
       if obj.object_heading < 0.0 :
         obj.object_heading += 360.0
 
-      heading = int(((obj.object_heading)%360.0)/0.0125)  # in 0.0125 degree unit
+      heading = int((float(obj.object_heading)%360.0)/0.0125)  # in 0.0125 degree unit
       if heading > 28800 :
         heading = 28800
         self.logger.info(f'obj.object_heading is out of range {obj.object_heading}')
 
       objects_array[idx].objType = obj.object_class
       objects_array[idx].objTypeCfd = obj.recognition_accuracy
-      objects_array[idx].objectID = msg.vehicle_id << 8 + idx  # vehicle_id는 제어부에서 임의로 설정되는데 현재 3대의 자율차에 1,2,3으로 할당.
+      objects_array[idx].objectID = (msg.vehicle_id << 8) + idx  # vehicle_id는 제어부에서 임의로 설정되는데 현재 3대의 자율차에 1,2,3으로 할당.
       objects_array[idx].measurementTime = measurementTimeOffset
       objects_array[idx].timeConfidence = 0
       objects_array[idx].pos.offsetX = offsetX

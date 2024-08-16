@@ -43,7 +43,6 @@ class Parser :
       return None
 
     hdr_flag, msg_type, msg_len = self.msgProcCommon.parseHeader(pkd_data)    
-    self.logger.info(f'Parsing header: {hdr_flag}, {msg_type}, {msg_len}')
     if hdr_flag is v2xconst.HDR_FLAG:
       self.info('Invalid header flag: %d' % hdr_flag)
       return None
