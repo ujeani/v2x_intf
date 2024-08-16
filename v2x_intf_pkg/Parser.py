@@ -23,8 +23,8 @@ class Parser :
         The logger object to log messages.
     """
     self.logger = logger
-    msgProcCommon = MsgProcCommon(self.logger)
-    msgProcRecognition = MsgProcRecognition(self.logger)
+    self.msgProcCommon = MsgProcCommon(self.logger)
+    self.msgProcRecognition = MsgProcRecognition(self.logger)
 
   def parse(self, pkd_data):
     """
