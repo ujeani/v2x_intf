@@ -2,7 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from v2x_intf_msg.msg import Recognition
-from v2x_intf_pkg.Parser import Parser
+from v2x_intf_pkg.MsgParser import Parser
 import asyncio
 from datetime import datetime
 
@@ -31,7 +31,7 @@ class V2XReceiver(Node):
             self.recognition_publisher.publish(parsed_msg)
           
           # TODO : Add support for other message types
-          
+
           else:
             self.get_logger().error('Error parsing message')
 
