@@ -45,7 +45,7 @@ class MsgProcRecognition:
     fixed_size = ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)
     ctypes.memmove(ctypes.addressof(recog_msg.data), data[hdr_size:(hdr_size+fixed_size)], fixed_size)
 
-    self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
+    # self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
 
     # Calculate the number of detected objects
     num_objects = recog_msg.data.numDetectedObjects
@@ -102,19 +102,19 @@ class MsgProcRecognition:
         recognition_accuracy = obj.objTypeCfd
       )
 
-      self.logger.info(f'(ROS->): Detected object {i}: '
-                 f'objType={obj.objType}, '
-                 f'objTypeCfd={obj.objTypeCfd}, '
-                 f'objectID={obj.objectID}, '
-                 f'measurementTime={obj.measurementTime}, '
-                 f'timeConfidence={obj.timeConfidence}, '
-                 f'pos.offsetX={obj.pos.offsetX}, '
-                 f'pos.offsetY={obj.pos.offsetY}, '
-                 f'posConfidence={obj.posConfidence}, '
-                 f'speed={obj.speed}, '
-                 f'speedConfidence={obj.speedConfidence}, '
-                 f'heading={obj.heading}, '
-                 f'headingConf={obj.headingConf}')
+      # self.logger.info(f'(ROS->): Detected object {i}: '
+      #            f'objType={obj.objType}, '
+      #            f'objTypeCfd={obj.objTypeCfd}, '
+      #            f'objectID={obj.objectID}, '
+      #            f'measurementTime={obj.measurementTime}, '
+      #            f'timeConfidence={obj.timeConfidence}, '
+      #            f'pos.offsetX={obj.pos.offsetX}, '
+      #            f'pos.offsetY={obj.pos.offsetY}, '
+      #            f'posConfidence={obj.posConfidence}, '
+      #            f'speed={obj.speed}, '
+      #            f'speedConfidence={obj.speedConfidence}, '
+      #            f'heading={obj.heading}, '
+      #            f'headingConf={obj.headingConf}')
 
 
       detected_objects.append(detected_object)
@@ -192,7 +192,7 @@ class MsgProcRecognition:
       num_objects = 255
       self.logger.info(f'Number of detected objects is over 256, set to 255')
 
-    self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
+    # self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
 
 
     objects_array = (recogfmt.DetectedObjectCommonData * num_objects)()
@@ -259,19 +259,19 @@ class MsgProcRecognition:
       objects_array[idx].heading = heading
       objects_array[idx].headingConf = 0
       
-      self.logger.info(f'(ROS->): Detected object {idx}: '
-                 f'objType={objects_array[idx].objType}, '
-                 f'objTypeCfd={objects_array[idx].objTypeCfd}, '
-                 f'objectID={objects_array[idx].objectID}, '
-                 f'measurementTime={objects_array[idx].measurementTime}, '
-                 f'timeConfidence={objects_array[idx].timeConfidence}, '
-                 f'pos.offsetX={objects_array[idx].pos.offsetX}, '
-                 f'pos.offsetY={objects_array[idx].pos.offsetY}, '
-                 f'posConfidence={objects_array[idx].posConfidence}, '
-                 f'speed={objects_array[idx].speed}, '
-                 f'speedConfidence={objects_array[idx].speedConfidence}, '
-                 f'heading={objects_array[idx].heading}, '
-                 f'headingConf={objects_array[idx].headingConf}')
+      # self.logger.info(f'(ROS->): Detected object {idx}: '
+      #            f'objType={objects_array[idx].objType}, '
+      #            f'objTypeCfd={objects_array[idx].objTypeCfd}, '
+      #            f'objectID={objects_array[idx].objectID}, '
+      #            f'measurementTime={objects_array[idx].measurementTime}, '
+      #            f'timeConfidence={objects_array[idx].timeConfidence}, '
+      #            f'pos.offsetX={objects_array[idx].pos.offsetX}, '
+      #            f'pos.offsetY={objects_array[idx].pos.offsetY}, '
+      #            f'posConfidence={objects_array[idx].posConfidence}, '
+      #            f'speed={objects_array[idx].speed}, '
+      #            f'speedConfidence={objects_array[idx].speedConfidence}, '
+      #            f'heading={objects_array[idx].heading}, '
+      #            f'headingConf={objects_array[idx].headingConf}')
 
 
     recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
@@ -289,6 +289,7 @@ class MsgProcRecognition:
         objects_bytes += object_bytes
 
     recog_bytes = hdr_bytes + fixed_part_bytes + objects_bytes
+    self.logger.info(f'(->V2X) Send recognition message length : {len(bytes(recog_bytes))}')
     return bytes(recog_bytes)
 
       
