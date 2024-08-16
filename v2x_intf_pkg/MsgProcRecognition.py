@@ -273,23 +273,22 @@ class MsgProcRecognition:
       objects_array[idx].headingConf = 0
 
     recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
-
+    
     fixed_part_size = ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)
     objects_size = num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)
-
-    self.logger.info(f'(ROS->): hdr size {ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)}, fixed part size {fixed_part_size}, objects size {objects_size}')
     recog_msg.hdr.msgLen = fixed_part_size + objects_size
-    self.logger.info(f'(ROS->): msgLen {recog_msg.hdr.msgLen}')
 
-    self.logger.info(f'Size of DetectedObjectCommonData: {ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
-    self.logger.info(f'Expected total objects size: {num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
-    for idx, obj in enumerate(recog_msg.objects) :
-      self.logger.info(f'Object {idx}: {obj}')
+    hdr_bytes = ctypes.string_at(ctypes.byref(recog_msg.hdr), ctypes.sizeof(recog_msg.hdr))
+    fixed_part_bytes = ctypes.string_at(ctypes.byref(recog_msg.data), ctypes.sizeof(recog_msg.data))
 
-    self.logger.info(f'(ROS->): recognition message created length {ctypes.sizeof(recog_msg)}')
-    self.logger.info(f'(ROS->): recognition message created {bytes(recog_msg)}')
-    self.logger.info(f'(ROS->): recognition message created with lenght {len(bytes(recog_msg))}')
-    return bytes(recog_msg)
+    objects_bytes = b''
+    for idx in range(num_objects):
+        object_bytes = ctypes.string_at(ctypes.byref(recog_msg.objects[idx]), ctypes.sizeof(recogfmt.DetectedObjectCommonData))
+        objects_bytes += object_bytes
+
+    recog_bytes = hdr_bytes + fixed_part_bytes + objects_bytes
+    self.logger.info(f'(ROS->): Created recognition message {len(recog_bytes)} bytes')
+    return bytes(recog_bytes)
 
       
 
