@@ -17,16 +17,16 @@ class DetectedObjectCommonData(ctypes.Structure):
         ("headingConf", ctypes.c_ubyte)      # unsigned char
     ]
 
-# Define the recognition_data_type structure
-class recognition_data_type(ctypes.Structure):
-    _fields_ = [
-        ("equipmentType", ctypes.c_ubyte),    # unsigned char
-        ("sDSMTimeStamp", fmtcommon.DDateTimeType),     # DDateTimeType structure
-        ("refPos", fmtcommon.Position3D),               # Position3D structure
-        ("refPosXYConf", fmtcommon.PositionalAccuracy), # PositionalAccuracy structure
-        ("numDetectedObjects", ctypes.c_ubyte), # unsigned char
-        ("objects", ctypes.POINTER(DetectedObjectCommonData)) # Pointer to DetectedObjectCommonData array
-    ]
+# # Define the recognition_data_type structure
+# class recognition_data_type(ctypes.Structure):
+#     _fields_ = [
+#         ("equipmentType", ctypes.c_ubyte),    # unsigned char
+#         ("sDSMTimeStamp", fmtcommon.DDateTimeType),     # DDateTimeType structure
+#         ("refPos", fmtcommon.Position3D),               # Position3D structure
+#         ("refPosXYConf", fmtcommon.PositionalAccuracy), # PositionalAccuracy structure
+#         ("numDetectedObjects", ctypes.c_ubyte), # unsigned char
+#         ("objects", ctypes.POINTER(DetectedObjectCommonData)) # Pointer to DetectedObjectCommonData array
+#     ]
 
 class recognition_data_fixed_part_type(ctypes.Structure):
     _fields_ = [

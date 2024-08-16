@@ -151,6 +151,10 @@ class MsgProcRecognition:
 
     self.logger.info(f'(ROS->): Start to create recognition message from {msg}')
 
+    self.logger.info(f'(ROS->): fmtcommon.v2x_intf_hdr_type size {ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)}')
+    self.logger.info(f'(ROS->): recogfmt.recognition_data_fixed_part_type size {ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)}')
+    self.logger.info(f'(ROS->): recogfmt.DetectedObjectCommonData size {ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
+    
 
     # J3224의 sDSMTimeStamp format 구성
     recog_msg.hdr.hdr_flag = v2xconst.HDR_FLAG
