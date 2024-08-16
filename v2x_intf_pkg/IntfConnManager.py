@@ -56,7 +56,7 @@ class IntfConnManager:
         with self.lock:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
             if ready_to_read:                
-                received_data = self.client_socket.recv(1024)
+                received_data = self.client_socket.recv(8192)
                 return received_data #.decode()
             return None
 
