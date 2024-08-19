@@ -9,6 +9,7 @@ import v2x_intf_pkg.FmtCommon as fmtcommon
 class MsgProcRecognition: 
   def __init__(self, logger):
     self.logger = logger
+    self.expected_cfd = -1
 
   def fromV2XMsg(self, data): # Header를 제외한 데이터를 수신받아서 Recognition 메시지로 변환
     # Create an empty v2x_recognition_msg_type instance
@@ -65,7 +66,6 @@ class MsgProcRecognition:
       num_detected_objects = 255
 
     vehicle_id = 0
-    rec_acc = 0
     for i in range(num_detected_objects):
       obj = recog_msg.objects[i]
       vehicle_id = obj.objectID >> 8
@@ -78,7 +78,14 @@ class MsgProcRecognition:
         object_class = obj.objType,
         recognition_accuracy = obj.objTypeCfd
       )
-      rec_acc = obj.objTypeCfd  # For test missing packet
+
+      if self.expected_cfd == -1:
+        self.expected_cfd = (obj.objTypeCfd+1)%100
+      else:  
+        if self.expected_cfd != obj.objTypeCfd:
+          self.logger.error(f'Expected recognition accuracy {self.expected_cfd} but received {obj.objTypeCfd}')
+        self.expected_cfd = (obj.objTypeCfd+1)%100
+          
       detected_objects.append(detected_object)
 
       # Construct the message object
@@ -88,7 +95,6 @@ class MsgProcRecognition:
           vehicle_position = vehicle_position,
           object_data = detected_objects
       )
-    self.logger.info(f'(->ROS2) Recognition message seq : {rec_acc}')
     return msg
 
   
