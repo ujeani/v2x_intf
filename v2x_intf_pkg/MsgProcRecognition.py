@@ -218,6 +218,7 @@ class MsgProcRecognition:
         objects_bytes += object_bytes
 
     recog_bytes = hdr_bytes + fixed_part_bytes + objects_bytes
+    self.logger.info(f'(->V2X) length of recog_bytes = {len(recog_bytes)}')
     return bytes(recog_bytes)
 
       
