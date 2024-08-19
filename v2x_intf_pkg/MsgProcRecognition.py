@@ -10,7 +10,7 @@ class MsgProcRecognition:
   def __init__(self, logger):
     self.logger = logger
     self.msgSeq = 0
-    self.expected_msgSeq = -1
+    self.expected_msgSeq = 256
 
   def fromV2XMsg(self, data): # Header를 제외한 데이터를 수신받아서 Recognition 메시지로 변환
     # Create an empty v2x_recognition_msg_type instance
@@ -24,12 +24,12 @@ class MsgProcRecognition:
     ctypes.memmove(ctypes.addressof(recog_msg.data), data[hdr_size:(hdr_size+fixed_size)], fixed_size)
 
     # self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
-    if self.expected_msgSeq == -1:
-      self.expected_msgSeq = (recog_msg.data.msgSeq+1)%256
+    if self.expected_msgSeq == 256:
+      self.expected_msgSeq = (recog_msg.data.msgSeq+1)%255
     else:
       if self.expected_msgSeq != recog_msg.data.msgSeq:
         self.logger.error(f'Expected recognition accuracy {self.expected_msgSeq} but received {recog_msg.data.msgSeq}')
-      self.expected_msgSeq = (recog_msg.data.msgSeq+1)%256
+      self.expected_msgSeq = (recog_msg.data.msgSeq+1)%255
 
     # Calculate the number of detected objects
     num_objects = recog_msg.data.numDetectedObjects
@@ -106,7 +106,7 @@ class MsgProcRecognition:
     recog_msg.hdr.msgID = v2xconst.MSG_RECOGNITION
 
     recog_msg.data.msgSeq = self.msgSeq
-    self.msgSeq = (self.msgSeq + 1) % 256
+    self.msgSeq = (self.msgSeq + 1) % 255
 
     recog_msg.data.equipmentType = v2xconst.EQUIPMENT_TYPE
     recog_msg.data.sDSMTimeStamp.year = msg.vehicle_time[0] # year
