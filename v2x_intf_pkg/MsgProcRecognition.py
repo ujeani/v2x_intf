@@ -28,7 +28,7 @@ class MsgProcRecognition:
       self.expected_msgSeq = (recog_msg.data.msgSeq+1)%255
     else:
       if self.expected_msgSeq != recog_msg.data.msgSeq:
-        self.logger.error(f'Expected recognition accuracy {self.expected_msgSeq} but received {recog_msg.data.msgSeq}')
+        self.logger.error(f'Expected msgSeq {self.expected_msgSeq} but received {recog_msg.data.msgSeq}')
       self.expected_msgSeq = (recog_msg.data.msgSeq+1)%255
 
     # Calculate the number of detected objects
@@ -107,7 +107,7 @@ class MsgProcRecognition:
 
     recog_msg.data.msgSeq = self.msgSeq
     self.msgSeq = (self.msgSeq + 1) % 255
-
+    self.logger.info(f'msgSeq = {recog_msg.data.msgSeq}')
     recog_msg.data.equipmentType = v2xconst.EQUIPMENT_TYPE
     recog_msg.data.sDSMTimeStamp.year = msg.vehicle_time[0] # year
     recog_msg.data.sDSMTimeStamp.month = msg.vehicle_time[1]  # month
