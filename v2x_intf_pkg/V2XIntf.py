@@ -3,8 +3,8 @@ import asyncio
 import threading
 import argparse
 from rclpy.executors import MultiThreadedExecutor
-from v2x_intf_pkg.IntfConnManager import IntfConnManager
-from v2x_intf_pkg.SubRecognition import SubRecognition
+from v2x_intf_pkg.V2XIntfConnManager import IntfConnManager
+from v2x_intf_pkg.V2XSubRecognition import SubRecognition
 from v2x_intf_pkg.V2XReceiver import V2XReceiver
 
 
