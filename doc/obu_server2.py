@@ -12,7 +12,7 @@ client2 = None
 def forward(src, dst, client_label):
     try:
         while True:
-            data = src.recv(1024)
+            data = src.recv(4096)
             if not data:
                 break
             dst.sendall(data)
