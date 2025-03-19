@@ -25,7 +25,7 @@ class V2XReceiver(Node):
           # self.get_logger().info(f'(V2X->) received data at {datetime.now()} with length {len(received_data)}')          
           # Parse the received data
           parsed_msg = self.parser.parse(received_data)
-          if isinstance(parsed_msg, Recognition):
+          if parsed_msg is not None and isinstance(parsed_msg, Recognition):
             # Publish the Recognition message
             # self.get_logger().info(f'(->ROS2) Publish recognition message at {datetime.now()}: {parsed_msg}')    
             self.recognition_publisher.publish(parsed_msg)
