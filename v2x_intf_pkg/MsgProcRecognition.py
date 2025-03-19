@@ -88,13 +88,13 @@ class MsgProcRecognition:
       )
       detected_objects.append(detected_object)
 
-      # Construct the message object
-      msg = Recognition(
-          vehicle_id = vehicle_id,
-          vehicle_time = vehicle_time,
-          vehicle_position = vehicle_position,
-          object_data = detected_objects
-      )
+    # Construct the message object
+    msg = Recognition(
+        vehicle_id = vehicle_id,
+        vehicle_time = vehicle_time,
+        vehicle_position = vehicle_position,
+        object_data = detected_objects
+    )
 
     return msg
 
