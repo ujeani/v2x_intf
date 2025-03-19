@@ -1,3 +1,12 @@
+# 이 프로그램을 AWS에서 실행하고 ROS2 노드와 통신하도록 하여 패킷 송수신을 테스트할 수 있다.
+# AWS 정보
+#   obu-ip : 3.34.3.66
+#   obu-port : 9201 and 9202
+# ROS2 노드 실행
+#  각각의 디바이스에서 실행 (9201, 9202 포트로 접속)
+#  $ ros2 run v2x_intf_pkg v2x_intf_node --obu-ip 3.34.3.66 --obu-port 9201
+#  $ ros2 run v2x_intf_pkg v2x_intf_node --obu-ip 3.34.3.66 --obu-port 9202
+
 import socket
 import threading
 
