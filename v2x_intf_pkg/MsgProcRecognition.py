@@ -100,6 +100,12 @@ class MsgProcRecognition:
 
   
   def toV2XMsg(self, msg):
+
+    if not isinstance(msg, Recognition):
+      self.logger.error('Input message is not of type Recognition')
+      return None
+  
+
     recog_msg = recogfmt.v2x_recognition_msg_type()
 
     # J3224의 sDSMTimeStamp format 구성
