@@ -13,6 +13,35 @@ The runtime has three layers:
 Outgoing messages flow from `v2x/recognition` through `RecognitionCodec` to UDP.
 Incoming UDP packets are decoded and published on `v2x/r_recognition`.
 
+
+# SAE J2735 ASN.1 Files
+
+This directory is reserved for the SAE J2735 ASN.1 definitions used by the
+V2X protocol implementation. The definitions are not included in this
+repository.
+
+## Setup
+
+1. Obtain the official
+   [SAE J2735ASN_202409 package](https://www.sae.org/standards/j2735asn_202409-v2x-communications-message-set-dictionary-asn-file).
+2. Extract the downloaded archive.
+3. Copy the extracted ASN.1 files into this directory.
+
+The resulting layout should resemble:
+
+```text
+asn.1/
+|-- J2735ASN_202409
+    |-- V2X ASN.1 Module Collection 2024
+        |-- *.asn files
+```
+
+Use the J2735 version expected by the protocol implementation. SAE files are
+subject to SAE International's licensing terms; verify that those terms permit
+your intended use and redistribution before committing them to the repository.
+
+
+
 ## Build with colcon
 
 This repository is a ROS 2 package and should be placed in the `src` directory

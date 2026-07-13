@@ -14,8 +14,8 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='woojin',
-    maintainer_email='woojin@todo.todo',
-    description='ROS 2 UDP bridge for V2X recognition messages',
+    maintainer_email='woojin@it-telecom.co.kr',
+    description='ROS 2 UDP bridge for V2X messages',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
