@@ -4,7 +4,7 @@
   <name>v2x_intf_pkg</name>
   <version>0.0.0</version>
   <description>ROS 2 UDP bridge for V2X recognition messages</description>
-  <maintainer email="woojin@todo.todo">woojin</maintainer>
+  <maintainer email="woojin@ite-telecom.co.kr">woojin</maintainer>
   <license>Apache-2.0</license>
 
   <exec_depend>rclpy</exec_depend>
