@@ -3,9 +3,12 @@
 <package format="3">
   <name>v2x_intf_pkg</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>ROS 2 UDP bridge for V2X recognition messages</description>
   <maintainer email="woojin@todo.todo">woojin</maintainer>
-  <license>TODO: License declaration</license>
+  <license>Apache-2.0</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>v2x_intf_msg</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
