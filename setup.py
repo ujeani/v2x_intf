@@ -11,7 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'pycrate>=0.8'],
     zip_safe=True,
     maintainer='woojin',
     maintainer_email='woojin@it-telecom.co.kr',

@@ -2,7 +2,7 @@
 
 import socket
 
-from v2x_intf_pkg.transport import UdpTransport
+from v2x_core.transport import UdpTransport
 
 
 def test_udp_send_and_receive():

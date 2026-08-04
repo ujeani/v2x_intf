@@ -28,7 +28,9 @@ def main(args=None):
     node = None
     try:
         node = V2XBridgeNode(
-            options.obu_ip, options.obu_port, options.local_port
+            options.obu_ip,
+            options.obu_port,
+            options.local_port,
         )
         rclpy.spin(node)
     except KeyboardInterrupt:

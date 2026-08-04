@@ -4,43 +4,20 @@ ROS 2 bridge between `v2x_intf_msg/Recognition` topics and a UDP V2X endpoint.
 
 ## Architecture
 
-The runtime has three layers:
+The project is split into a reusable Python library and a ROS adapter:
 
-- `transport/udp.py`: nonblocking UDP I/O only
-- `protocol/`: packet, recognition, and optional WAVE IFM codecs
-- `ros/bridge_node.py`: ROS subscription, publication, and receive timer
+- [`v2x_core`](v2x_core/README.md): ROS-independent J2735/J3224 protocol
+  codecs and UDP transport. See that package's README for its API, standalone
+  Python usage, and SAE ASN.1 setup instructions.
+- `v2x_intf_pkg/ros/`: ROS message adapter and bridge node
 
-Outgoing messages flow from `v2x/recognition` through `RecognitionCodec` to UDP.
-Incoming UDP packets are decoded and published on `v2x/r_recognition`.
+Outgoing messages flow from `v2x/recognition` through `RecognitionCodec` into a
+UPER-encoded J3224 SDSM (J2735 message ID 41). The MessageFrame is wrapped in an
+IFM 0.7 envelope and sent over UDP. Incoming raw J2735 MessageFrames are decoded
+and published on `v2x/r_recognition`.
 
-
-# SAE J2735 ASN.1 Files
-
-This directory is reserved for the SAE J2735 ASN.1 definitions used by the
-V2X protocol implementation. The definitions are not included in this
-repository.
-
-## Setup
-
-1. Obtain the official
-   [SAE J2735ASN_202409 package](https://www.sae.org/standards/j2735asn_202409-v2x-communications-message-set-dictionary-asn-file).
-2. Extract the downloaded archive.
-3. Copy the extracted ASN.1 files into this directory.
-
-The resulting layout should resemble:
-
-```text
-asn.1/
-|-- J2735ASN_202409
-    |-- V2X ASN.1 Module Collection 2024
-        |-- *.asn files
-```
-
-Use the J2735 version expected by the protocol implementation. SAE files are
-subject to SAE International's licensing terms; verify that those terms permit
-your intended use and redistribution before committing them to the repository.
-
-
+The ROS bridge has no knowledge of ASN.1 at all; `v2x_core` locates and
+compiles the official SAE ASN.1 module collection on its own.
 
 ## Build with colcon
 
@@ -53,6 +30,7 @@ distribution installed on the computer, for example `humble` or `jazzy`.
 
 ```bash
 source /opt/ros/<distro>/setup.bash
+python3 -m pip install 'pycrate>=0.8'
 ```
 
 From the workspace root (the directory containing `src`), install dependencies
@@ -106,7 +84,8 @@ The arguments mean:
 - `--local-port`: local UDP port on which incoming packets are received
 
 The defaults are defined in `v2x_intf_pkg/config.py`. Stop the node with
-`Ctrl+C`.
+`Ctrl+C`. See [`v2x_core/README.md`](v2x_core/README.md) for how the SAE
+ASN.1 module collection is located when the node starts.
 
 ## Verify the ROS topics
 

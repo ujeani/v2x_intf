@@ -1,4 +1,4 @@
-"""Small, protocol-independent UDP transport."""
+"""Protocol-independent UDP transport for Python applications."""
 
 import socket
 from typing import Optional, Tuple
