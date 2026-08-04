@@ -4,7 +4,7 @@ import datetime
 from dataclasses import dataclass
 from typing import List, Tuple
 
-from v2x_core.protocol.sdsm import SaeJ2735Codec
+from v2x_core.protocol.saej2735 import SaeJ2735Codec
 
 _EQUIPMENT_TYPES = ("unknown", "rsu", "obu", "vru")
 _OBJECT_TYPES = ("unknown", "vehicle", "vru", "animal")
