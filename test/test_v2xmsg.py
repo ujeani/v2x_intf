@@ -1,7 +1,7 @@
 """Tests for WAVE IFM envelope generation."""
 
-from v2x_core.protocol.sdsm import encode_message_frame
-from v2x_core.protocol.wave import WaveMessage
+from v2x_core.protocol.saej2735 import encode_sdsm_frame
+from v2x_core.protocol.v2xmsg import V2XMessage
 
 
 def _sdsm():
@@ -38,8 +38,8 @@ def _sdsm():
 
 
 def test_pack_sdsm_ifm_envelope():
-    message_frame = encode_message_frame(_sdsm())
-    packed = WaveMessage().pack_ifm_message(message_frame)
+    message_frame = encode_sdsm_frame(_sdsm())
+    packed = V2XMessage().pack_ifm_message(message_frame)
 
     assert b"Type=SensorDataSharingMessage\n" in packed
     assert b"PSID=8010\n" in packed

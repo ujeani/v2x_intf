@@ -4,7 +4,7 @@ from rclpy.node import Node
 from v2x_intf_msg.msg import Recognition
 
 from v2x_core.protocol import RecognitionCodec
-from v2x_core.protocol.wave import WaveMessage
+from v2x_core.protocol.v2xmsg import V2XMessage
 from v2x_core.transport import UdpTransport
 from v2x_intf_pkg.ros.recognition_adapter import (
     recognition_from_ros,
@@ -19,7 +19,7 @@ class V2XBridgeNode(Node):
         super().__init__("v2x_bridge")
 
         self._transport = UdpTransport(remote_host, remote_port, local_port)
-        self._wave = WaveMessage()
+        self._v2xmsg = V2XMessage()
         self._recog_codec = RecognitionCodec()
         self._recog_publisher = self.create_publisher(
             Recognition, "v2x/r_recognition", 10
@@ -39,22 +39,26 @@ class V2XBridgeNode(Node):
             wave_message = self._recog_codec.encode(
                 recognition_from_ros(message)
             )
-            self._transport.send(self._wave.pack_ifm_message(wave_message))
+            self._transport.send(self._v2xmsg.pack_ifm_message(wave_message))
         except (OSError, RuntimeError, TypeError, ValueError) as exc:
             self.get_logger().error(f"Failed to send Recognition: {exc}")
 
-    def _proc_wave_msg(self, msg_id: int, msg_name: str, data: dict) -> None:
-        if msg_id == 41:  # SDSM
+    def _proc_v2x_msg(self, msg_id: int, msg_name: str, data: bytes) -> None:
+        if msg_id is None:
+            self.get_logger().error("Received Custom(Non-SAE) V2X packet")
+            return
+        elif msg_id == 41:  # SDSM
             try:
                 recognition_msg = recognition_to_ros(
                     self._recog_codec.decode(data)
                 )
                 self._recog_publisher.publish(recognition_msg)
                 self.get_logger().info(
-                    f"Published Recognition from WAVE ID {msg_id} ({msg_name})"
+                    f"Published Recognition from V2X Msg ID {msg_id} ({msg_name})"
                 )
             except (RuntimeError, TypeError, ValueError) as exc:
                 self.get_logger().error(f"Failed to decode Recognition message: {exc}")
+
 
     def _receive_packets(self) -> None:
         # Bound work per timer call so a packet burst cannot starve ROS callbacks.
@@ -63,21 +67,7 @@ class V2XBridgeNode(Node):
                 data = self._transport.receive()
                 if data is None:
                     return
-                msg_id, msg_name, parsed_msg, error = self._wave.on_message(data)
-
-                if msg_id is not None:
-                    if msg_name is not None:
-                        self.get_logger().info(
-                            f"Received WAVE ID {msg_id} ({msg_name})"
-                        )
-                        self._proc_wave_msg(msg_id, msg_name, parsed_msg)
-                    else:
-                        self.get_logger().info(
-                            f"Received unsupported WAVE message ID {msg_id}"
-                        )
-                else:
-                    if error:
-                        self.get_logger().error(error)
+                self._v2xmsg.on_message(data, self._proc_v2x_msg)
 
             except (OSError, RuntimeError, TypeError, ValueError) as exc:
                 self.get_logger().error(f"Discarded invalid V2X packet: {exc}")

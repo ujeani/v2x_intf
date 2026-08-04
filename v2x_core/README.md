@@ -24,7 +24,7 @@ from v2x_core.protocol import (
     RecognitionCodec,
     RecognitionData,
 )
-from v2x_core.protocol.wave import WaveMessage
+from v2x_core.protocol.v2xmsg import V2XMessage
 from v2x_core.transport import UdpTransport
 
 now = datetime.datetime.now()
@@ -45,7 +45,7 @@ message = RecognitionData(
 asn1_directory = "/path/to/official/modules"
 codec = RecognitionCodec(asn1_directory=asn1_directory)
 frame = codec.encode(message)
-datagram = WaveMessage(asn1_directory).pack_ifm_message(frame)
+datagram = V2XMessage(asn1_directory).pack_ifm_message(frame)
 
 with UdpTransport("127.0.0.1", 1516, 0) as transport:
     transport.send(datagram)
@@ -85,6 +85,6 @@ your intended use and redistribution before committing them to the repository.
 
 The codec finds the module collection in one of two ways, in this order:
 
-1. The `asn1_directory` argument passed to `RecognitionCodec` or `WaveMessage`.
+1. The `asn1_directory` argument passed to `RecognitionCodec` or `V2XMessage`.
 2. `V2X_ASN1_DIR` from `v2x_core/config.py`, resolved relative to this
    package's own directory.

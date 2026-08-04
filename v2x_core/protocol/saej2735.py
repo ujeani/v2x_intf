@@ -137,7 +137,7 @@ def _import_generated_module(module_name: str, path: Path):
     return module
 
 
-def encode_message_frame(sdsm: dict, asn1_directory=None) -> bytes:
+def encode_sdsm_frame(sdsm: dict, asn1_directory=None) -> bytes:
     """Encode an SDSM with the official SAE module collection."""
     return SaeJ2735Codec(asn1_directory).encode_sdsm(sdsm)
 
@@ -147,7 +147,7 @@ def decode_frame(data: bytes, asn1_directory=None):
     return SaeJ2735Codec(asn1_directory).decode_frame(data)
 
 
-def decode_message_frame(data: bytes, asn1_directory=None):
+def decode_sdsm_frame(data: bytes, asn1_directory=None):
     """Decode an official MessageFrame containing a J3224 SDSM."""
     codec = SaeJ2735Codec(asn1_directory)
     return SDSM_MESSAGE_ID, codec.decode_sdsm(data)

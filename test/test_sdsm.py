@@ -1,9 +1,9 @@
 """Tests for the J3224 SDSM UPER codec."""
 
-from v2x_core.protocol.sdsm import (
+from v2x_core.protocol.saej2735 import (
     SDSM_MESSAGE_ID,
-    decode_message_frame,
-    encode_message_frame,
+    decode_sdsm_frame,
+    encode_sdsm_frame,
 )
 
 
@@ -47,7 +47,7 @@ def test_sdsm_message_frame_round_trip():
         }],
     }
 
-    message_id, decoded = decode_message_frame(encode_message_frame(sdsm))
+    message_id, decoded = decode_sdsm_frame(encode_sdsm_frame(sdsm))
 
     assert message_id == SDSM_MESSAGE_ID
     assert decoded == sdsm
