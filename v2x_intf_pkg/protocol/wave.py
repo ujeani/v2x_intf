@@ -172,18 +172,18 @@ class WaveMessage:
             msg_id = (data[0] << 8) | data[1]
             return msg_id, None, None, None # message name None means unknown, but we still return the ID for further processing
 
-    def pack_ifm_message(self, data: bytes, message_type: str = "Unknown") -> bytes:
-        """Wrap a DSRC payload in the text envelope expected by the IFM service."""
-        if len(data) < 3:
-            raise ValueError("DSRC payload must contain at least three bytes")
-        message_id = int.from_bytes(data[:2], "big")
-        name, psid, channel, priority = WAVE_MESSAGES.get(
-            message_id, (message_type, str(message_id), "CCH", "1")
-        )
-        fields = [
-            "Version=0.7", f"Type={name}", f"PSID={psid}",
-            f"Priority={priority}", "TxMode=ALT", f"TxChannel={channel}",
-            "TxInterval=0", "DeliveryStart=", "DeliveryStop=",
-            "Signature=False", "Encryption=False", f"Payload={data.hex()}",
-        ]
-        return ("\n".join(fields) + "\n").encode()
+    # def pack_ifm_message(self, data: bytes, message_type: str = "Unknown") -> bytes:
+    #     """Wrap a DSRC payload in the text envelope expected by the IFM service."""
+    #     if len(data) < 3:
+    #         raise ValueError("DSRC payload must contain at least three bytes")
+    #     message_id = int.from_bytes(data[:2], "big")
+    #     name, psid, channel, priority = WAVE_MESSAGES.get(
+    #         message_id, (message_type, str(message_id), "CCH", "1")
+    #     )
+    #     fields = [
+    #         "Version=0.7", f"Type={name}", f"PSID={psid}",
+    #         f"Priority={priority}", "TxMode=ALT", f"TxChannel={channel}",
+    #         "TxInterval=0", "DeliveryStart=", "DeliveryStop=",
+    #         "Signature=False", "Encryption=False", f"Payload={data.hex()}",
+    #     ]
+    #     return ("\n".join(fields) + "\n").encode()
